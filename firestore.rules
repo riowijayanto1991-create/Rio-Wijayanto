@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Health check / connection test document
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // Laporan Patroli Harian
+    match /patrol_reports/{reportId} {
+      allow read: if true;
+      allow create, update: if isValidId(reportId)
+        && request.resource.data.reportNumber is string
+        && request.resource.data.reportNumber.size() > 0
+        && request.resource.data.reportNumber.size() <= 64;
+      allow delete: if false;
+    }
+
+    // Laporan Occurrence Satwa
+    match /occurrence_reports/{reportId} {
+      allow read: if true;
+      allow create, update: if isValidId(reportId)
+        && request.resource.data.reportNumber is string
+        && request.resource.data.reportNumber.size() > 0
+        && request.resource.data.reportNumber.size() <= 64;
+      allow delete: if false;
+    }
+
+    // Laporan Wildlife Strike
+    match /strike_reports/{reportId} {
+      allow read: if true;
+      allow create, update: if isValidId(reportId)
+        && request.resource.data.reportNumber is string
+        && request.resource.data.reportNumber.size() > 0
+        && request.resource.data.reportNumber.size() <= 64;
+      allow delete: if false;
+    }
+
+    // Daftar Pejabat / Kontak Broadcast
+    match /management_recipients/{recipientId} {
+      allow read: if true;
+      allow create, update: if isValidId(recipientId)
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+      allow delete: if false;
+    }
+
+    // Log Notifikasi Broadcast
+    match /notification_logs/{logId} {
+      allow read: if true;
+      allow create: if isValidId(logId)
+        && request.resource.data.reportNumber is string;
+      allow update, delete: if false;
+    }
+  }
+}

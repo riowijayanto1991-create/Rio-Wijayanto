@@ -1,0 +1,141 @@
+{
+  "entities": {
+    "PatrolReport": {
+      "title": "PatrolReport",
+      "description": "Laporan harian patroli dan inspeksi satwa liar airside",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reportNumber": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "hariTanggal": { "type": "string" },
+        "pleton": { "type": "string" },
+        "dinas": { "type": "string" },
+        "waktuPatroli": { "type": "string" },
+        "durasi": { "type": "string" },
+        "cuaca": { "type": "string" },
+        "suhu": { "type": "string" },
+        "situasiOperasional": { "type": "string" },
+        "rutePatroli": { "type": "string" },
+        "gridLocation": { "type": "string" },
+        "totalPopulasiTeramati": { "type": "number" },
+        "kondisiVegetasi": { "type": "string" },
+        "kondisiDrainase": { "type": "string" },
+        "potensiAttractant": { "type": "string" },
+        "habitatManagement": { "type": "string" },
+        "areaPerhatian": { "type": "string" }
+      },
+      "required": ["id", "reportNumber", "hariTanggal", "pleton", "dinas"]
+    },
+    "OccurrenceReport": {
+      "title": "OccurrenceReport",
+      "description": "Laporan kejadian perjumpaan satwa liar di runway / taxiway",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reportNumber": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "hariTanggal": { "type": "string" },
+        "waktuKejadian": { "type": "string" },
+        "pleton": { "type": "string" },
+        "dinas": { "type": "string" },
+        "pod": { "type": "string" },
+        "lokasi": { "type": "string" },
+        "gridLocation": { "type": "string" },
+        "runwayTaxiwayArea": { "type": "string" },
+        "jenisOccurrence": { "type": "string" },
+        "kronologi": { "type": "string" },
+        "jenisSatwa": { "type": "string" },
+        "jumlahSatwa": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "reportNumber", "hariTanggal", "waktuKejadian", "lokasi"]
+    },
+    "WildlifeStrikeReport": {
+      "title": "WildlifeStrikeReport",
+      "description": "Laporan insiden tabrakan satwa dengan pesawat udara (ICAO Doc 9388)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reportNumber": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "hariTanggal": { "type": "string" },
+        "waktuKejadian": { "type": "string" },
+        "pleton": { "type": "string" },
+        "dinas": { "type": "string" },
+        "pod": { "type": "string" },
+        "lokasi": { "type": "string" },
+        "gridLocation": { "type": "string" },
+        "runwayTaxiway": { "type": "string" },
+        "sumberInformasi": { "type": "string" },
+        "operatorAirline": { "type": "string" },
+        "flightNumber": { "type": "string" },
+        "aircraftType": { "type": "string" },
+        "registration": { "type": "string" },
+        "jenisWildlife": { "type": "string" },
+        "jumlahWildlife": { "type": "number" },
+        "kronologiStrike": { "type": "string" },
+        "indikasiKerusakan": { "type": "string" },
+        "statusLaporan": { "type": "string" }
+      },
+      "required": ["id", "reportNumber", "hariTanggal", "operatorAirline", "flightNumber"]
+    },
+    "ManagementRecipient": {
+      "title": "ManagementRecipient",
+      "description": "Daftar jajaran manajemen dan pejabat penerima notifikasi broadcast",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "department": { "type": "string" },
+        "notifyOnStrike": { "type": "boolean" },
+        "notifyOnOccurrence": { "type": "boolean" },
+        "notifyOnPatrol": { "type": "boolean" }
+      },
+      "required": ["id", "name", "role", "phone"]
+    },
+    "NotificationLog": {
+      "title": "NotificationLog",
+      "description": "Riwayat pengiriman broadcast notifikasi",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "reportType": { "type": "string" },
+        "reportNumber": { "type": "string" },
+        "title": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "recipientRole": { "type": "string" },
+        "channel": { "type": "string" },
+        "status": { "type": "string" },
+        "messageSummary": { "type": "string" }
+      },
+      "required": ["id", "timestamp", "reportNumber", "recipientName"]
+    }
+  },
+  "firestore": {
+    "/patrol_reports/{reportId}": {
+      "schema": "PatrolReport",
+      "description": "Koleksi data patroli harian unit Wildlife Hazard"
+    },
+    "/occurrence_reports/{reportId}": {
+      "schema": "OccurrenceReport",
+      "description": "Koleksi insiden perjumpaan satwa liar di airside"
+    },
+    "/strike_reports/{reportId}": {
+      "schema": "WildlifeStrikeReport",
+      "description": "Koleksi insiden wildlife strike pesawat udara"
+    },
+    "/management_recipients/{recipientId}": {
+      "schema": "ManagementRecipient",
+      "description": "Koleksi kontak pejabat dan pemangku kepentingan untuk broadcast"
+    },
+    "/notification_logs/{logId}": {
+      "schema": "NotificationLog",
+      "description": "Koleksi riwayat broadcast dan transmisi laporan"
+    }
+  }
+}

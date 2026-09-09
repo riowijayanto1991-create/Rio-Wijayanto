@@ -1,0 +1,6 @@
+{
+  "name": "Sistem Pelaporan Wildlife Hazard - PT Angkasa Pura Indonesia",
+  "description": "Sistem Informasi Laporan Patroli/Inspeksi Harian, Laporan Occurrence, dan Laporan Wildlife Strike Unit Wildlife Hazard PT Angkasa Pura Indonesia dengan Dashboard Monitoring Real-time, Ekspor PDF/Excel, dan Notifikasi Manajemen.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
