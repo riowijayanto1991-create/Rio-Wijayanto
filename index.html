@@ -2,18 +2,132 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <script>
+      // Suppress harmless Vite dev WebSocket closed error in iframe proxy environment where HMR is disabled
+      (function() {
+        const OriginalWebSocket = window.WebSocket;
+        if (!OriginalWebSocket) return;
+
+        window.WebSocket = function(url, protocols) {
+          const isViteHmr = 
+            (typeof protocols === 'string' && protocols === 'vite-hmr') ||
+            (Array.isArray(protocols) && protocols.includes('vite-hmr')) ||
+            (typeof url === 'string' && (url.includes('vite-hmr') || url.includes('/@vite/client')));
+
+          if (isViteHmr) {
+            const listeners = {};
+            const mockWs = {
+              readyState: 1, // OPEN
+              send: function() {},
+              close: function() {},
+              addEventListener: function(type, fn) {
+                listeners[type] = listeners[type] || [];
+                listeners[type].push(fn);
+                if (type === 'open') {
+                  setTimeout(() => {
+                    try { fn({ type: 'open' }); } catch (err) {}
+                  }, 0);
+                }
+              },
+              removeEventListener: function(type, fn) {
+                if (!listeners[type]) return;
+                listeners[type] = listeners[type].filter(l => l !== fn);
+              },
+              dispatchEvent: function() { return true; },
+              onopen: null,
+              onclose: null,
+              onerror: null,
+              onmessage: null,
+            };
+            return mockWs;
+          }
+
+          return new OriginalWebSocket(url, protocols);
+        };
+
+        window.WebSocket.prototype = OriginalWebSocket.prototype;
+        window.WebSocket.CONNECTING = OriginalWebSocket.CONNECTING;
+        window.WebSocket.OPEN = OriginalWebSocket.OPEN;
+        window.WebSocket.CLOSING = OriginalWebSocket.CLOSING;
+        window.WebSocket.CLOSED = OriginalWebSocket.CLOSED;
+
+        window.addEventListener('error', function(e) {
+          if (e && e.message && (e.message.indexOf('WebSocket') !== -1 || e.message.indexOf('ws://') !== -1)) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+          }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+          if (e && e.reason && typeof e.reason.message === 'string' && (e.reason.message.indexOf('WebSocket') !== -1 || e.reason.message.indexOf('ws://') !== -1)) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+          }
+        }, true);
+      })();
+    </script>
     <title>Sistem Pelaporan Wildlife Hazard - PT Angkasa Pura Indonesia</title>
-    <meta name="description" content="Sistem Informasi Laporan Patroli/Inspeksi Harian, Laporan Occurrence, dan Laporan Wildlife Strike Unit Wildlife Hazard PT Angkasa Pura Indonesia dengan Dashboard Monitoring Real-time, Ekspor PDF/Excel, dan Notifikasi Manajemen." />
+    <meta name="description" content="Sistem Informasi Laporan Patroli/Inspeksi Harian, Occurrence, Wildlife Strike, dan Pengecekan Kendaraan Operasional Serah Terima Dinas Unit Wildlife Hazard PT Angkasa Pura Indonesia dengan visualisasi tren bulanan Recharts, ekspor PDF/Excel, dan sinkronisasi real-time." />
+    
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <meta name="theme-color" content="#F5F7FA" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="WHU CGK" />
+    <meta name="application-name" content="WHU CGK" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- App Icons -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
     <meta property="og:title" content="Sistem Pelaporan Wildlife Hazard - PT Angkasa Pura Indonesia" />
-    <meta property="og:description" content="Sistem Informasi Laporan Patroli/Inspeksi Harian, Laporan Occurrence, dan Laporan Wildlife Strike Unit Wildlife Hazard PT Angkasa Pura Indonesia dengan Dashboard Monitoring Real-time, Ekspor PDF/Excel, dan Notifikasi Manajemen." />
+    <meta property="og:description" content="Sistem Informasi Laporan Patroli/Inspeksi Harian, Occurrence, Wildlife Strike, dan Pengecekan Kendaraan Operasional Serah Terima Dinas Unit Wildlife Hazard PT Angkasa Pura Indonesia dengan visualisasi tren bulanan Recharts, ekspor PDF/Excel, dan sinkronisasi real-time." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <script>
+      (function() {
+        try {
+          // Check version to bust stale browser cache automatically
+          var CURRENT_APP_VERSION = '2025.10.27-wsr-v2';
+          var storedVer = localStorage.getItem('whu_app_bundle_ver');
+          if (storedVer !== CURRENT_APP_VERSION) {
+            localStorage.setItem('whu_app_bundle_ver', CURRENT_APP_VERSION);
+            if ('caches' in window) {
+              caches.keys().then(function(names) {
+                return Promise.all(names.map(function(n) { return caches.delete(n); }));
+              });
+            }
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                regs.forEach(function(reg) { reg.unregister(); });
+              });
+            }
+          }
+
+          // Hapus preferensi tema lama sepenuhnya agar tema cerah aktif murni
+          localStorage.removeItem('whu_theme_mode');
+          var themeV2 = localStorage.getItem('whu_theme_mode_v2');
+          if (themeV2 === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch(e) {}
+      })();
+    </script>
   </head>
-  <body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <body class="bg-[#F5F7FA] text-[#0F172A] font-sans antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ShieldAlert, 
   Save, 
@@ -6,109 +6,193 @@ import {
   Share2, 
   CheckCircle2, 
   Plus, 
-  Trash2,
+  Trash2, 
   FileSpreadsheet,
-  AlertTriangle
+  AlertTriangle,
+  Edit3,
+  X,
+  Sparkles,
+  Calendar,
+  Users,
+  RotateCcw,
+  Bookmark
 } from 'lucide-react';
+import { getActiveDutyInfo } from '../utils/dutyRosterService';
 import { OccurrenceReport, Pleton, Dinas, Cuaca, OccurrenceStatus } from '../types';
 import { exportOccurrencePDF } from '../utils/pdfExport';
+import { DateTimeCalendarPicker } from './DateTimeCalendarPicker';
+import { DocumentationUpload } from './DocumentationUpload';
+import { IncidentLocationPickerModal } from './IncidentLocationPickerModal';
+import { MapPin, Navigation } from 'lucide-react';
+import { generateSequentialReportNumber, formatReportCreationTime } from '../utils/reportNumberGenerator';
+import { WHMP_ZONES } from '../config/whmpRiskConfig';
 
 interface OccurrenceFormProps {
   onSaveReport: (report: OccurrenceReport) => void;
   onOpenBroadcast: (report: OccurrenceReport) => void;
+  onNavigateToHistory?: () => void;
+  initialData?: OccurrenceReport | null;
+  isEditMode?: boolean;
+  onCancelEdit?: () => void;
+  onOpenDutyRoster?: () => void;
+  existingReports?: OccurrenceReport[];
 }
 
 export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
   onSaveReport,
-  onOpenBroadcast
+  onOpenBroadcast,
+  onNavigateToHistory,
+  initialData,
+  isEditMode = false,
+  onCancelEdit,
+  onOpenDutyRoster,
+  existingReports = []
 }) => {
+  const [createdAt] = useState<string>(() => initialData?.createdAt || new Date().toISOString());
+  const [reportNumber, setReportNumber] = useState<string>(() => {
+    if (initialData?.reportNumber) return initialData.reportNumber;
+    return generateSequentialReportNumber('OCC', existingReports, initialData?.createdAt || new Date().toISOString());
+  });
+
+  useEffect(() => {
+    if (!initialData && !isEditMode) {
+      setReportNumber(generateSequentialReportNumber('OCC', existingReports, createdAt));
+    }
+  }, [existingReports, initialData, isEditMode, createdAt]);
+
   // I. Data Occurrence
-  const [hariTanggal, setHariTanggal] = useState<string>(
-    new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  const [hariTanggal, setHariTanggal] = useState<string>(initialData?.hariTanggal || '');
+  const [waktuKejadian, setWaktuKejadian] = useState<string>(initialData?.waktuKejadian || '');
+  const [pleton, setPleton] = useState<Pleton>(initialData?.pleton || 'Pleton Alpha');
+  const [dinas, setDinas] = useState<Dinas>(initialData?.dinas || 'Dinas Pagi (08:00 - 20:00)');
+  const [pod, setPod] = useState<string>(initialData?.pod || '');
+
+  // Auto Roster Synchronization
+  const [autoRosterSync, setAutoRosterSync] = useState<boolean>(!initialData);
+
+  const startTimeFromKejadian = useMemo(() => {
+    const match = waktuKejadian.match(/(\d{1,2}:\d{2})/);
+    return match ? match[1] : '';
+  }, [waktuKejadian]);
+
+  const calculatedRoster = useMemo(() => {
+    return getActiveDutyInfo(hariTanggal, startTimeFromKejadian);
+  }, [hariTanggal, startTimeFromKejadian]);
+
+  // Synchronize pleton and dinas automatically when date/time changes
+  useEffect(() => {
+    if (autoRosterSync && !isEditMode) {
+      setPleton(calculatedRoster.pleton);
+      setDinas(calculatedRoster.dinas);
+    }
+  }, [calculatedRoster, autoRosterSync, isEditMode]);
+  const [lokasi, setLokasi] = useState<string>(initialData?.lokasi || '');
+  const [gridLocation, setGridLocation] = useState<string>(initialData?.gridLocation || '');
+  const [runwayTaxiwayArea, setRunwayTaxiwayArea] = useState<string>(initialData?.runwayTaxiwayArea || '');
+  const [jenisOccurrence, setJenisOccurrence] = useState<string>(initialData?.jenisOccurrence || '');
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number; distanceFromArpKm?: number } | undefined>(
+    initialData?.coordinates
   );
-  const [waktuKejadian, setWaktuKejadian] = useState<string>('07:45 WIB');
-  const [pleton, setPleton] = useState<Pleton>('Pleton 1');
-  const [dinas, setDinas] = useState<Dinas>('Dinas Pagi (06:00 - 14:00)');
-  const [pod, setPod] = useState<string>('');
-  const [lokasi, setLokasi] = useState<string>('Threshold Runway 25L');
-  const [gridLocation, setGridLocation] = useState<string>('Grid G12');
-  const [runwayTaxiwayArea, setRunwayTaxiwayArea] = useState<string>('Runway 25L - Stopway & PAPI Light Area');
-  const [jenisOccurrence, setJenisOccurrence] = useState<string>(
-    'Kawanan Burung Kuntul (Flock) melintas rendah di jalur glide path saat pesawat mendekati touchdown.'
-  );
+  const [whmpZoneId, setWhmpZoneId] = useState<string>(initialData?.whmpZoneId || 'zone-1');
+  const [isMapPickerOpen, setIsMapPickerOpen] = useState<boolean>(false);
 
   // II. Kronologi Kejadian
-  const [kronologi, setKronologi] = useState<string>(
-    'Pukul 07:43 WIB ATC TWR menginformasikan pilot GA-152 melihat kawanan burung sekitar 100 kaki di depan threshold 25L. Petugas WHU yang sedang siaga di Holding Bay segera merespon ke lokasi runway shoulder, mengamati sekelompok 15 ekor burung kuntul terbang melingkar. Petugas segera menembakkan bird banger 2 butir dan menyalakan sirine. Kawanan burung langsung bubar ke arah luar perimeter selatan (rawa-rawa) pada pukul 07:47 WIB.'
-  );
+  const [kronologi, setKronologi] = useState<string>(initialData?.kronologi || '');
 
   // III. Identifikasi Satwa
-  const [jenisSatwa, setJenisSatwa] = useState<string>('Burung Kuntul Kerbau (Bubulcus ibis)');
-  const [jumlahSatwa, setJumlahSatwa] = useState<number>(15);
-  const [kondisiSatwa, setKondisiSatwa] = useState<'Hidup' | 'Mati' | 'Terluka' | 'Tidak teridentifikasi'>('Hidup');
-  const [aktivitasPergerakan, setAktivitasPergerakan] = useState<string>(
-    'Terbang melingkar pada ketinggian 15-25 meter di atas threshold lalu hinggap di rumput shoulder.'
+  const [jenisSatwa, setJenisSatwa] = useState<string>(initialData?.jenisSatwa || '');
+  const [jumlahSatwa, setJumlahSatwa] = useState<number>(initialData?.jumlahSatwa || 0);
+  const [kondisiSatwa, setKondisiSatwa] = useState<'Hidup' | 'Mati' | 'Terluka' | 'Tidak teridentifikasi'>(
+    initialData?.kondisiSatwa || 'Hidup'
   );
+  const [aktivitasPergerakan, setAktivitasPergerakan] = useState<string>(initialData?.aktivitasPergerakan || '');
 
   // IV. Kondisi Operasional
-  const [cuaca, setCuaca] = useState<Cuaca>('Cerah');
-  const [suhu, setSuhu] = useState<string>('28°C');
-  const [visibility, setVisibility] = useState<string>('> 10 km');
-  const [kondisiRunwayTaxiway, setKondisiRunwayTaxiway] = useState<string>('Kering, bersih');
+  const [cuaca, setCuaca] = useState<Cuaca>(initialData?.cuaca || 'Cerah');
+  const [suhu, setSuhu] = useState<string>(initialData?.suhu || '');
+  const [visibility, setVisibility] = useState<string>(initialData?.visibility || '');
+  const [kondisiRunwayTaxiway, setKondisiRunwayTaxiway] = useState<string>(initialData?.kondisiRunwayTaxiway || '');
   const [aktivitasPergerakanPesawat, setAktivitasPergerakanPesawat] = useState<string>(
-    'Sangat Padat (Pesawat B737-800 GA-152 posisi final approach 4 NM)'
+    initialData?.aktivitasPergerakanPesawat || ''
   );
 
   // V. Potensi Hazard
-  const [jenisPotensiHazard, setJenisPotensiHazard] = useState<string>(
-    'Potensi tabrakan burung terhadap kaca kokpit atau mesin pesawat saat flare landing.'
-  );
-  const [potensiDampakOperasi, setPotensiDampakOperasi] = useState<string>(
-    'Risiko Go-Around (missed approach) atau bird strike ingestion berkecepatan tinggi.'
-  );
+  const [jenisPotensiHazard, setJenisPotensiHazard] = useState<string>(initialData?.jenisPotensiHazard || '');
+  const [potensiDampakOperasi, setPotensiDampakOperasi] = useState<string>(initialData?.potensiDampakOperasi || '');
 
   // VI. Tindakan yang Dilakukan
-  const [deteksiMonitoring, setDeteksiMonitoring] = useState<string>(
-    'Observasi visual menggunakan binokular dari pos holding WHU.'
-  );
-  const [mobileDispersal, setMobileDispersal] = useState<string>(
-    'Kendaraan patroli meluncur ke runway strip mengarahkan arah pengusiran menjauhi centerline.'
-  );
-  const [auditoryVisualDeterrent, setAuditoryVisualDeterrent] = useState<string>(
-    'Penembakan 2 butir pyrotechnic acoustic banger.'
-  );
-  const [koordinasi, setKoordinasi] = useState<string>(
-    'Koordinasi real-time via radio komunikasi aeronautika VHF dengan TWR Controller (Frekuensi 118.1 MHz).'
-  );
-  const [tindakanLainnya, setTindakanLainnya] = useState<string>(
-    'Konfirmasi visual ke pilot GA-152 melalui TWR bahwa runway telah clear.'
-  );
+  const [deteksiMonitoring, setDeteksiMonitoring] = useState<string>(initialData?.tindakan?.deteksiMonitoring || '');
+  const [mobileDispersal, setMobileDispersal] = useState<string>(initialData?.tindakan?.mobileDispersal || '');
+  const [auditoryVisualDeterrent, setAuditoryVisualDeterrent] = useState<string>(initialData?.tindakan?.auditoryVisualDeterrent || '');
+  const [koordinasi, setKoordinasi] = useState<string>(initialData?.tindakan?.koordinasi || '');
+  const [tindakanLainnya, setTindakanLainnya] = useState<string>(initialData?.tindakan?.tindakanLainnya || '');
 
   // VII. Hasil Penanganan
-  const [hasilPenanganan, setHasilPenanganan] = useState<string>(
-    'Kawanan burung berhasil dibubarkan ke luar bandara dalam waktu kurang dari 2 menit. Pesawat GA-152 mendarat selamat pukul 07:49 WIB tanpa kendala.'
-  );
-  const [status, setStatus] = useState<OccurrenceStatus>('Selesai');
+  const [hasilPenanganan, setHasilPenanganan] = useState<string>(initialData?.hasilPenanganan || '');
+  const [status, setStatus] = useState<OccurrenceStatus>(initialData?.status || 'Selesai');
 
   // VIII. Rekomendasi / Mitigasi
-  const [mitigasiList, setMitigasiList] = useState<string[]>([
-    'Tingkatkan siaga visual di threshold 25L selama sisa dinas pagi.',
-    'Cek area genangan parit pembuangan air di luar perimeter selatan yang menjadi tempat berkumpul burung.',
-    'Koordinasikan pemotongan rumput berkala dengan unit landscape agar tidak mengundang cacing/serangga.'
-  ]);
+  const [mitigasiList, setMitigasiList] = useState<string[]>(
+    initialData?.rekomendasiMitigasi && initialData.rekomendasiMitigasi.length > 0 ? initialData.rekomendasiMitigasi : ['']
+  );
 
   // IX. Dokumentasi
-  const [fotoVideoAda, setFotoVideoAda] = useState<boolean>(true);
-  const [keteranganDokumentasi, setKeteranganDokumentasi] = useState<string>(
-    'Foto dokumentasi kawanan burung dan bekas selongsong pyrotechnic terarsip di unit WHU.'
-  );
+  const [fotoVideoAda, setFotoVideoAda] = useState<boolean>(initialData?.fotoVideoAda ?? (initialData?.fotos && initialData.fotos.length > 0) ?? false);
+  const [keteranganDokumentasi, setKeteranganDokumentasi] = useState<string>(initialData?.keteranganDokumentasi || '');
+  const [fotos, setFotos] = useState<string[]>(initialData?.fotos || []);
 
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
+  // Populate form if initialData is provided (Edit Mode)
+  useEffect(() => {
+    if (initialData) {
+      setHariTanggal(initialData.hariTanggal || '');
+      setWaktuKejadian(initialData.waktuKejadian || '');
+      setPleton(initialData.pleton || 'Pleton Alpha');
+      setDinas(initialData.dinas || 'Dinas Pagi (08:00 - 20:00)');
+      setPod(initialData.pod || '');
+      setLokasi(initialData.lokasi || '');
+      setGridLocation(initialData.gridLocation || '');
+      setRunwayTaxiwayArea(initialData.runwayTaxiwayArea || '');
+      setJenisOccurrence(initialData.jenisOccurrence || '');
+      setKronologi(initialData.kronologi || '');
+      setJenisSatwa(initialData.jenisSatwa || '');
+      setJumlahSatwa(initialData.jumlahSatwa ?? 1);
+      setKondisiSatwa(initialData.kondisiSatwa || 'Hidup');
+      setAktivitasPergerakan(initialData.aktivitasPergerakan || '');
+      setCuaca(initialData.cuaca || 'Cerah');
+      setSuhu(initialData.suhu || '28°C');
+      setVisibility(initialData.visibility || '');
+      setKondisiRunwayTaxiway(initialData.kondisiRunwayTaxiway || '');
+      setAktivitasPergerakanPesawat(initialData.aktivitasPergerakanPesawat || '');
+      setJenisPotensiHazard(initialData.jenisPotensiHazard || '');
+      setPotensiDampakOperasi(initialData.potensiDampakOperasi || '');
+      if (initialData.tindakan) {
+        setDeteksiMonitoring(initialData.tindakan.deteksiMonitoring || '');
+        setMobileDispersal(initialData.tindakan.mobileDispersal || '');
+        setAuditoryVisualDeterrent(initialData.tindakan.auditoryVisualDeterrent || '');
+        setKoordinasi(initialData.tindakan.koordinasi || '');
+        setTindakanLainnya(initialData.tindakan.tindakanLainnya || '');
+      }
+      setHasilPenanganan(initialData.hasilPenanganan || '');
+      setStatus(initialData.status || 'Selesai');
+      if (initialData.rekomendasiMitigasi) {
+        setMitigasiList(initialData.rekomendasiMitigasi);
+      }
+      setFotoVideoAda(!!(initialData.fotoVideoAda || (initialData.fotos && initialData.fotos.length > 0)));
+      setKeteranganDokumentasi(initialData.keteranganDokumentasi || '');
+      setFotos(initialData.fotos || []);
+      setCoordinates(initialData.coordinates);
+      setWhmpZoneId(initialData.whmpZoneId || 'zone-1');
+      setSavedSuccess(false);
+    }
+  }, [initialData]);
+
   const currentReport: OccurrenceReport = {
-    id: `occ-${Date.now()}`,
-    reportNumber: `WHU/OCC/${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, '0')}/${Math.floor(1000 + Math.random() * 9000)}`,
-    createdAt: new Date().toISOString(),
+    id: initialData?.id || `occ-${Date.now()}`,
+    reportNumber,
+    createdAt,
+    updatedAt: new Date().toISOString(),
     hariTanggal,
     waktuKejadian,
     pleton,
@@ -116,7 +200,11 @@ export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
     pod,
     lokasi,
     gridLocation,
+    whmpZoneId,
+    whmpZoneName: WHMP_ZONES.find(z => z.id === whmpZoneId)?.name || 'Zona 1: Runway Strips & RESA',
+    whmpZoneIsCritical: WHMP_ZONES.find(z => z.id === whmpZoneId)?.isCritical ?? true,
     runwayTaxiwayArea,
+    coordinates,
     jenisOccurrence,
     kronologi,
     jenisSatwa,
@@ -140,37 +228,350 @@ export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
     hasilPenanganan,
     status,
     rekomendasiMitigasi: mitigasiList.filter(m => m.trim() !== ''),
-    fotoVideoAda,
-    keteranganDokumentasi
+    fotoVideoAda: fotoVideoAda || (fotos && fotos.length > 0),
+    keteranganDokumentasi,
+    fotos
+  };
+
+  const [isLastSavedDraft, setIsLastSavedDraft] = useState<boolean>(false);
+  const [hasAutoDraft, setHasAutoDraft] = useState<boolean>(false);
+  const [autoDraftTimestamp, setAutoDraftTimestamp] = useState<string>('');
+
+  // Check for auto-saved draft in localStorage on mount
+  useEffect(() => {
+    if (!initialData) {
+      try {
+        const raw = localStorage.getItem('whu_draft_occ_auto');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && (parsed.hariTanggal || parsed.kronologi || parsed.jenisSatwa || (parsed.pod && parsed.pod.trim() !== ''))) {
+            setHasAutoDraft(true);
+            setAutoDraftTimestamp(parsed._savedAt || '');
+          }
+        }
+      } catch {}
+    }
+  }, [initialData]);
+
+  const loadAutoDraft = () => {
+    try {
+      const raw = localStorage.getItem('whu_draft_occ_auto');
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.hariTanggal) setHariTanggal(d.hariTanggal);
+        if (d.waktuKejadian) setWaktuKejadian(d.waktuKejadian);
+        if (d.pleton) setPleton(d.pleton);
+        if (d.dinas) setDinas(d.dinas);
+        if (d.pod) setPod(d.pod);
+        if (d.lokasi) setLokasi(d.lokasi);
+        if (d.gridLocation) setGridLocation(d.gridLocation);
+        if (d.whmpZoneId) setWhmpZoneId(d.whmpZoneId);
+        if (d.runwayTaxiwayArea) setRunwayTaxiwayArea(d.runwayTaxiwayArea);
+        if (d.coordinates) setCoordinates(d.coordinates);
+        if (d.jenisOccurrence) setJenisOccurrence(d.jenisOccurrence);
+        if (d.kronologi) setKronologi(d.kronologi);
+        if (d.jenisSatwa) setJenisSatwa(d.jenisSatwa);
+        if (d.jumlahSatwa) setJumlahSatwa(d.jumlahSatwa);
+        if (d.kondisiSatwa) setKondisiSatwa(d.kondisiSatwa);
+        if (d.aktivitasPergerakan) setAktivitasPergerakan(d.aktivitasPergerakan);
+        if (d.cuaca) setCuaca(d.cuaca);
+        if (d.suhu) setSuhu(d.suhu);
+        if (d.visibility) setVisibility(d.visibility);
+        if (d.kondisiRunwayTaxiway) setKondisiRunwayTaxiway(d.kondisiRunwayTaxiway);
+        if (d.aktivitasPergerakanPesawat) setAktivitasPergerakanPesawat(d.aktivitasPergerakanPesawat);
+        if (d.jenisPotensiHazard) setJenisPotensiHazard(d.jenisPotensiHazard);
+        if (d.potensiDampakOperasi) setPotensiDampakOperasi(d.potensiDampakOperasi);
+        if (d.deteksiMonitoring) setDeteksiMonitoring(d.deteksiMonitoring);
+        if (d.mobileDispersal) setMobileDispersal(d.mobileDispersal);
+        if (d.auditoryVisualDeterrent) setAuditoryVisualDeterrent(d.auditoryVisualDeterrent);
+        if (d.koordinasi) setKoordinasi(d.koordinasi);
+        if (d.tindakanLainnya) setTindakanLainnya(d.tindakanLainnya);
+        if (d.hasilPenanganan) setHasilPenanganan(d.hasilPenanganan);
+        if (d.status) setStatus(d.status);
+        if (d.mitigasiList) setMitigasiList(d.mitigasiList);
+        if (d.keteranganDokumentasi) setKeteranganDokumentasi(d.keteranganDokumentasi);
+        if (d.fotos) setFotos(d.fotos);
+        setHasAutoDraft(false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const discardAutoDraft = () => {
+    try {
+      localStorage.removeItem('whu_draft_occ_auto');
+    } catch {}
+    setHasAutoDraft(false);
+  };
+
+  // Debounced auto-save draft locally while filling
+  useEffect(() => {
+    if (!initialData && !savedSuccess) {
+      const timer = setTimeout(() => {
+        try {
+          if (hariTanggal || kronologi || jenisSatwa || pod.trim() !== '') {
+            const draftData = {
+              hariTanggal,
+              waktuKejadian,
+              pleton,
+              dinas,
+              pod,
+              lokasi,
+              gridLocation,
+              whmpZoneId,
+              runwayTaxiwayArea,
+              coordinates,
+              jenisOccurrence,
+              kronologi,
+              jenisSatwa,
+              jumlahSatwa,
+              kondisiSatwa,
+              aktivitasPergerakan,
+              cuaca,
+              suhu,
+              visibility,
+              kondisiRunwayTaxiway,
+              aktivitasPergerakanPesawat,
+              jenisPotensiHazard,
+              potensiDampakOperasi,
+              deteksiMonitoring,
+              mobileDispersal,
+              auditoryVisualDeterrent,
+              koordinasi,
+              tindakanLainnya,
+              hasilPenanganan,
+              status,
+              mitigasiList,
+              keteranganDokumentasi,
+              fotos,
+              _savedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            };
+            localStorage.setItem('whu_draft_occ_auto', JSON.stringify(draftData));
+          }
+        } catch {}
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    initialData,
+    savedSuccess,
+    hariTanggal,
+    waktuKejadian,
+    pleton,
+    dinas,
+    pod,
+    lokasi,
+    gridLocation,
+    runwayTaxiwayArea,
+    coordinates,
+    jenisOccurrence,
+    kronologi,
+    jenisSatwa,
+    jumlahSatwa,
+    kondisiSatwa,
+    aktivitasPergerakan,
+    cuaca,
+    suhu,
+    visibility,
+    kondisiRunwayTaxiway,
+    aktivitasPergerakanPesawat,
+    jenisPotensiHazard,
+    potensiDampakOperasi,
+    deteksiMonitoring,
+    mobileDispersal,
+    auditoryVisualDeterrent,
+    koordinasi,
+    tindakanLainnya,
+    hasilPenanganan,
+    status,
+    mitigasiList,
+    keteranganDokumentasi,
+    fotos
+  ]);
+
+  const executeSave = (asDraft: boolean = false) => {
+    const finalReport: OccurrenceReport = {
+      ...currentReport,
+      id: initialData?.id || `occ-${Date.now()}`,
+      reportNumber: reportNumber,
+      createdAt: createdAt,
+      updatedAt: new Date().toISOString(),
+      isDraft: asDraft,
+      draftSavedAt: asDraft ? new Date().toISOString() : undefined,
+      fotoVideoAda: fotoVideoAda || (fotos && fotos.length > 0),
+      keteranganDokumentasi,
+      fotos,
+      pod: pod.trim() !== '' ? pod : (asDraft ? 'Petugas WHU (Draft)' : 'Petugas Pelapor WHU')
+    };
+    onSaveReport(finalReport);
+    setIsLastSavedDraft(asDraft);
+    setSavedSuccess(true);
+    try {
+      localStorage.removeItem('whu_draft_occ_auto');
+    } catch {}
+  };
+
+  const handleSaveDraft = () => {
+    executeSave(true);
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    onSaveReport(currentReport);
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 4000);
+    executeSave(false);
   };
 
   return (
     <form onSubmit={handleSave} className="max-w-4xl mx-auto bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8 text-slate-800 space-y-8">
       {/* Official Header */}
-      <div className="border-b border-amber-300 pb-5 text-center">
-        <span className="text-xs font-bold text-amber-800 uppercase tracking-widest">
-          PT ANGKASA PURA INDONESIA - AIRSIDE OPERATION
-        </span>
-        <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1 uppercase">
-          2. LAPORAN OCCURRENCE WILDLIFE HAZARD
-        </h2>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Formulir Pelaporan Kejadian / Gangguan Satwa Liar di Area Pergerakan Pesawat
-        </p>
+      <div className="border-b border-amber-300 pb-5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div>
+            <span className="text-xs font-bold text-amber-800 uppercase tracking-widest">
+              PT ANGKASA PURA INDONESIA - ARFF DIVISION
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-0.5 uppercase">
+              {isEditMode ? 'EDIT WHR — WILDLIFE HAZARD REPORT' : '2. WHR — WILDLIFE HAZARD REPORT'}
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Identifikasi bahaya, evaluasi risiko, dan mitigasi • Unit Wildlife Hazard (WHS)
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 flex-wrap justify-center sm:justify-end">
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer"
+              title="Simpan sementara sebagai draft agar bisa dilanjutkan nanti tanpa validasi ketat"
+            >
+              <Bookmark className="w-4 h-4 fill-current" />
+              <span>Simpan Draft</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => exportOccurrencePDF(currentReport)}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1 transition cursor-pointer"
+              title="Download format PDF resmi"
+            >
+              <Download className="w-3.5 h-3.5 text-amber-600" />
+              <span>PDF</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Auto Draft Recovery Banner */}
+      {hasAutoDraft && !initialData && (
+        <div className="p-4 rounded-xl bg-amber-50 border-2 border-amber-300 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-in fade-in">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-amber-600 text-white rounded-lg shrink-0">
+              <Bookmark className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-bold text-sm text-amber-950">Draft Tersimpan Ditemukan</p>
+              <p className="text-xs text-amber-800 mt-0.5">
+                Terdapat data draft occurrence yang belum diselesaikan (tersimpan otomatis pukul {autoDraftTimestamp || 'sebelumnya'}). Ingin melanjutkan pengisian?
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+            <button
+              type="button"
+              onClick={discardAutoDraft}
+              className="flex-1 sm:flex-initial px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold cursor-pointer transition"
+            >
+              Abaikan
+            </button>
+            <button
+              type="button"
+              onClick={loadAutoDraft}
+              className="flex-1 sm:flex-initial px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold cursor-pointer transition shadow-xs"
+            >
+              Pulihkan Draft
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Draft Mode Alert Banner (opened from History) */}
+      {initialData?.isDraft && (
+        <div className="p-4 rounded-xl bg-amber-500/15 border-2 border-amber-400 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-amber-600 text-white rounded-lg shrink-0">
+              <Bookmark className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-sm text-slate-900">Mode Edit Draft WHR (Hazard Report)</span>
+                <span className="px-2 py-0.5 bg-amber-200 text-amber-900 font-mono font-bold rounded text-[11px] border border-amber-300">
+                  DRAFT WHR • {initialData.reportNumber}
+                </span>
+                {initialData.draftSavedAt && (
+                  <span className="text-[11px] text-amber-800 font-medium">
+                    (Draft disimpan: {new Date(initialData.draftSavedAt).toLocaleString('id-ID')})
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Dokumen ini berstatus <strong>Draft Sementara</strong>. Anda dapat memperbarui draft ini atau klik <strong>"Terbitkan Laporan Resmi"</strong> saat seluruh data telah lengkap.
+              </p>
+            </div>
+          </div>
+
+          {onCancelEdit && (
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              className="px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs shrink-0"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Tutup Draft</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Edit Mode Alert Banner (published) */}
+      {isEditMode && initialData && !initialData.isDraft && (
+        <div className="p-4 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-amber-500 text-white rounded-lg shrink-0">
+              <Edit3 className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-sm text-slate-900">Mode Edit Dokumen WHR (Hazard Report)</span>
+                <span className="px-2 py-0.5 bg-amber-200 text-amber-900 font-mono font-bold rounded text-[11px] border border-amber-300">
+                  {initialData.reportNumber}
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Anda sedang mengubah laporan occurrence yang sudah tersimpan. Klik "Simpan Perubahan Laporan" untuk memperbarui data arsip.
+              </p>
+            </div>
+          </div>
+
+          {onCancelEdit && (
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              className="px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shadow-xs shrink-0"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Batal Edit</span>
+            </button>
+          )}
+        </div>
+      )}
 
       {savedSuccess && (
         <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800 flex items-center justify-between text-sm">
           <div className="flex items-center space-x-2">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-            <span><strong>Berhasil Disimpan!</strong> Laporan Occurrence telah tercatat ke sistem dan dashboard.</span>
+            <span>
+              <strong>{isEditMode ? 'Perubahan Berhasil Diperbarui!' : 'Berhasil Disimpan!'}</strong> Laporan Occurrence telah tercatat ke sistem dan dashboard.
+            </span>
           </div>
           <button
             type="button"
@@ -183,78 +584,197 @@ export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
         </div>
       )}
 
+      {/* Nomor Dokumen Resmi & Urutan Kronologis */}
+      <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-slate-700">No. Dokumen PDF:</span>
+          <span className="font-mono font-bold text-amber-950 bg-white px-2.5 py-1 rounded-md border border-amber-300 shadow-2xs">
+            {reportNumber}
+          </span>
+        </div>
+        <span className="text-[11px] text-slate-500">
+          Penomoran otomatis berurutan sesuai waktu pembuatan ({formatReportCreationTime(createdAt)})
+        </span>
+      </div>
+
       {/* I. DATA OCCURRENCE */}
       <div className="space-y-4">
         <div className="bg-amber-50 px-3 py-1.5 rounded text-sm font-bold text-amber-900 border-l-4 border-amber-600">
           I. DATA OCCURRENCE
         </div>
 
+        {/* Kalender & Waktu Kejadian */}
+        <DateTimeCalendarPicker
+          hariTanggal={hariTanggal}
+          onHariTanggalChange={setHariTanggal}
+          mode="single"
+          waktu={waktuKejadian}
+          onWaktuChange={setWaktuKejadian}
+          accentColor="amber"
+        />
+
+        {/* Smart Roster Indicator Banner */}
+        <div className="bg-amber-50/80 border border-amber-200 rounded-lg p-3 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-amber-600 text-white rounded-md shrink-0">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-amber-950">Roster Otomatis CGK:</span>
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                  {calculatedRoster.pleton}
+                </span>
+                <span className="text-slate-600">
+                  • {calculatedRoster.dinas} ({calculatedRoster.shiftCode})
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                {autoRosterSync 
+                  ? 'Pleton dan dinas otomatis disinkronkan berdasarkan tanggal & waktu kejadian.' 
+                  : 'Mode manual aktif (Roster otomatis dijeda).'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            {!autoRosterSync ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setAutoRosterSync(true);
+                  setPleton(calculatedRoster.pleton);
+                  setDinas(calculatedRoster.dinas);
+                }}
+                className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded font-semibold text-[11px] flex items-center gap-1 cursor-pointer transition shadow-2xs"
+                title="Aktifkan kembali sinkronisasi otomatis sesuai roster"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset ke Roster</span>
+              </button>
+            ) : null}
+
+            {onOpenDutyRoster && (
+              <button
+                type="button"
+                onClick={onOpenDutyRoster}
+                className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded font-semibold text-[11px] flex items-center gap-1 cursor-pointer transition"
+                title="Lihat kalender jadwal dinas lengkap resmi WHU"
+              >
+                <Calendar className="w-3 h-3 text-amber-600" />
+                <span>Jadwal Roster</span>
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Hari / Tanggal</label>
-            <input
-              type="text"
-              value={hariTanggal}
-              onChange={e => setHariTanggal(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Waktu Kejadian</label>
-            <input
-              type="text"
-              value={waktuKejadian}
-              onChange={e => setWaktuKejadian(e.target.value)}
-              placeholder="e.g. 07:45 WIB"
-              className="w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Pleton</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-semibold text-slate-700">Pleton</label>
+              {autoRosterSync && (
+                <span className="text-[10px] text-amber-600 font-medium">Otomatis Roster</span>
+              )}
+            </div>
             <select
               value={pleton}
-              onChange={e => setPleton(e.target.value as Pleton)}
+              onChange={e => {
+                setPleton(e.target.value as Pleton);
+                setAutoRosterSync(false);
+              }}
               className="w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500 bg-white"
             >
-              <option value="Pleton 1">Pleton 1</option>
-              <option value="Pleton 2">Pleton 2</option>
-              <option value="Pleton 3">Pleton 3</option>
-              <option value="Pleton 4">Pleton 4</option>
+              <option value="Pleton Alpha">Pleton Alpha</option>
+              <option value="Pleton Bravo">Pleton Bravo</option>
+              <option value="Pleton Charlie">Pleton Charlie</option>
+              <option value="Pleton Delta">Pleton Delta</option>
             </select>
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Dinas</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-semibold text-slate-700">Dinas</label>
+              {autoRosterSync && (
+                <span className="text-[10px] text-amber-600 font-medium">Otomatis Waktu</span>
+              )}
+            </div>
             <select
               value={dinas}
-              onChange={e => setDinas(e.target.value as Dinas)}
+              onChange={e => {
+                setDinas(e.target.value as Dinas);
+                setAutoRosterSync(false);
+              }}
               className="w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500 bg-white"
             >
-              <option value="Dinas Pagi (06:00 - 14:00)">Dinas Pagi (06:00 - 14:00)</option>
-              <option value="Dinas Siang (14:00 - 22:00)">Dinas Siang (14:00 - 22:00)</option>
-              <option value="Dinas Malam (22:00 - 06:00)">Dinas Malam (22:00 - 06:00)</option>
+              <option value="Dinas Pagi (08:00 - 20:00)">Dinas Pagi (08:00 - 20:00)</option>
+              <option value="Dinas Malam (20:00 - 08:00)">Dinas Malam (20:00 - 08:00)</option>
             </select>
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">
-              Petugas Pelapor / Pelaksana (Diisi Manual)
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-semibold text-slate-700">
+                Petugas Pelapor / Pelaksana
+              </label>
+              <span className="text-[10px] text-slate-400">Piket WHU</span>
+            </div>
             <input
               type="text"
               value={pod}
               onChange={e => setPod(e.target.value)}
-              placeholder="Ketik Nama Lengkap Petugas Pelapor..."
+              placeholder="Ketik Nama Petugas Pelapor..."
               className="w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500 bg-white"
-              required
             />
-            <p className="text-[10px] text-slate-500 mt-1">
-              Diisi manual nama personel unit WHU yang mencatat/menangani kejadian.
-            </p>
+            {/* Quick chips of roster personnel */}
+            {calculatedRoster.personnel.length > 0 && (
+              <div className="mt-1.5 flex items-center gap-1 flex-wrap">
+                <span className="text-[10px] text-slate-500">Pilih Cepat:</span>
+                {calculatedRoster.personnel.map((p, pIdx) => {
+                  const label = `${p.nama} (${p.nik})`;
+                  return (
+                    <button
+                      key={p.nik || `occurrence-personnel-${pIdx}`}
+                      type="button"
+                      onClick={() => setPod(label)}
+                      className={`px-1.5 py-0.5 rounded text-[10px] border transition cursor-pointer ${
+                        pod === label 
+                          ? 'bg-amber-700 text-white border-amber-800' 
+                          : 'bg-white hover:bg-amber-50 text-slate-700 border-slate-300'
+                      }`}
+                    >
+                      {p.nama}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Interactive Map Location Pinpoint Trigger */}
+          <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+            <div>
+              <div className="flex items-center gap-1.5 font-bold text-amber-900 text-xs">
+                <MapPin className="w-4 h-4 text-amber-700" />
+                <span>Pemetaan Titik &amp; Area Kejadian (Peta Interaktif)</span>
+              </div>
+              <p className="text-[11px] text-amber-700/80 mt-0.5">
+                {coordinates ? (
+                  <span className="font-mono font-bold text-amber-900">
+                    GPS: {coordinates.latitude}, {coordinates.longitude} ({coordinates.distanceFromArpKm} km dari ARP)
+                  </span>
+                ) : (
+                  'Tandai titik lokasi kejadian langsung di peta airside untuk mendapatkan koordinat presisi.'
+                )}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsMapPickerOpen(true)}
+              className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+            >
+              <Navigation className="w-3.5 h-3.5" />
+              <span>{coordinates ? 'Ubah Titik di Peta' : '📍 Tandai di Peta'}</span>
+            </button>
           </div>
 
           <div>
@@ -334,6 +854,45 @@ export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
               className="w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500"
               required
             />
+          </div>
+
+          {/* Alokasi Zonasi Risiko WHMP (Bab II) */}
+          <div className="sm:col-span-2 bg-amber-50/70 border border-amber-200 rounded-lg p-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-800">Alokasi Zonasi Risiko WHMP (Bab II)</span>
+                  {WHMP_ZONES.find(z => z.id === whmpZoneId)?.isCritical ? (
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-rose-100 text-rose-700 border border-rose-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+                      CRITICAL ZONE 1-3
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-100 text-emerald-700 border border-emerald-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                      NON-CRITICAL ZONE (4-6)
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Klasifikasi zona pergerakan satwa liar sesuai dokumen WHMP Soekarno-Hatta (Zona 1–3 prioritas mitigasi kritis).
+                </p>
+              </div>
+              <div className="text-[11px] bg-white border border-amber-200 rounded px-2.5 py-1 text-slate-600 font-mono">
+                Cakupan: <span className="font-semibold text-amber-900">{WHMP_ZONES.find(z => z.id === whmpZoneId)?.airsideArea || '-'}</span>
+              </div>
+            </div>
+            <select
+              value={whmpZoneId}
+              onChange={e => setWhmpZoneId(e.target.value)}
+              className="w-full px-3 py-2 text-xs border border-amber-300 rounded bg-white font-medium text-slate-800 focus:ring-1 focus:ring-amber-500"
+            >
+              {WHMP_ZONES.map(z => (
+                <option key={z.id} value={z.id}>
+                  {z.name} {z.isCritical ? '⚠️ [CRITICAL ZONE]' : ''} — {z.description}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -645,48 +1204,74 @@ export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
       </div>
 
       {/* IX. DOKUMENTASI */}
-      <div className="space-y-3">
-        <div className="bg-amber-50 px-3 py-1.5 rounded text-sm font-bold text-amber-900 border-l-4 border-amber-600">
-          IX. DOKUMENTASI
-        </div>
+      <DocumentationUpload
+        photos={fotos}
+        onPhotosChange={(newPhotos) => {
+          setFotos(newPhotos);
+          if (newPhotos.length > 0) setFotoVideoAda(true);
+        }}
+        keterangan={keteranganDokumentasi}
+        onKeteranganChange={setKeteranganDokumentasi}
+        maxPhotos={5}
+        sectionNumber="IX"
+        title="DOKUMENTASI & BUKTI FOTO OCCURRENCE"
+        subtitle="Unggah bukti dokumentasi foto kejadian khusus / temuan satwa liar di airside (maksimal 5 foto)."
+        placeholderKeterangan="Catatan dokumentasi kejadian (misal: Foto 1: Biawak berukuran 1.5m di strip runway 25R, Foto 2: Evakuasi menggunakan jaring)..."
+        themeColor="amber"
+      />
 
-        <div className="space-y-2 text-xs">
-          <div className="flex items-center space-x-6">
-            <span className="font-semibold text-slate-700">Foto / Video :</span>
-            <label className="flex items-center space-x-1.5 cursor-pointer">
-              <input
-                type="radio"
-                name="fotoVideoAda"
-                checked={fotoVideoAda}
-                onChange={() => setFotoVideoAda(true)}
-                className="w-4 h-4 text-amber-600"
-              />
-              <span>■ Ada</span>
-            </label>
-            <label className="flex items-center space-x-1.5 cursor-pointer">
-              <input
-                type="radio"
-                name="fotoVideoAda"
-                checked={!fotoVideoAda}
-                onChange={() => setFotoVideoAda(false)}
-                className="w-4 h-4 text-amber-600"
-              />
-              <span>■ Tidak Ada</span>
-            </label>
+      {savedSuccess && (
+        <div className={`p-4 rounded-xl border-2 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in ${
+          isLastSavedDraft 
+            ? 'bg-amber-50 border-amber-400 text-amber-900' 
+            : 'bg-emerald-50 border-emerald-400 text-emerald-900'
+        }`}>
+          <div className="flex items-center space-x-2.5">
+            {isLastSavedDraft ? (
+              <Bookmark className="w-6 h-6 text-amber-600 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+            )}
+            <div>
+              <p className="font-bold text-sm">
+                {isLastSavedDraft 
+                  ? 'Draft Laporan WHR (Hazard Report) Berhasil Disimpan!' 
+                  : isEditMode 
+                  ? 'Perubahan Dokumen WHR Berhasil Diperbarui!' 
+                  : 'Laporan WHR (Hazard Report) Resmi Berhasil Disimpan & Disinkronkan!'}
+              </p>
+              <p className="text-xs mt-0.5">
+                Nomor: <span className="font-mono font-semibold">{currentReport.reportNumber}</span> • {
+                  isLastSavedDraft 
+                    ? 'Tersimpan sebagai draft. Anda dapat melanjutkannya kapan saja melalui menu Arsip Laporan.' 
+                    : 'Data tersimpan di database operasional dan dashboard.'
+                }
+              </p>
+            </div>
           </div>
-
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Keterangan Dokumentasi :</label>
-            <input
-              type="text"
-              value={keteranganDokumentasi}
-              onChange={e => setKeteranganDokumentasi(e.target.value)}
-              placeholder="Catatan berkas bukti foto/video..."
-              className="w-full px-3 py-2 border border-slate-300 rounded focus:ring-1 focus:ring-amber-500"
-            />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {onNavigateToHistory && (
+              <button
+                type="button"
+                onClick={onNavigateToHistory}
+                className="flex-1 sm:flex-initial px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer transition shadow-xs"
+              >
+                Lihat di Riwayat
+              </button>
+            )}
+            {!isLastSavedDraft && (
+              <button
+                type="button"
+                onClick={() => onOpenBroadcast(currentReport)}
+                className="flex-1 sm:flex-initial px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer transition shadow-xs"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                Kirim WA
+              </button>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Action Footer */}
       <div className="pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
@@ -699,7 +1284,18 @@ export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
           Cetak PDF Resmi
         </button>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 flex-wrap">
+          {/* Tombol Simpan Draft */}
+          <button
+            type="button"
+            onClick={handleSaveDraft}
+            className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-xs cursor-pointer"
+            title="Simpan sementara sebagai draft agar bisa dilanjutkan nanti tanpa validasi ketat"
+          >
+            <Bookmark className="w-4 h-4 text-amber-600" />
+            <span>Simpan sebagai Draft</span>
+          </button>
+
           <button
             type="button"
             onClick={() => onOpenBroadcast(currentReport)}
@@ -708,15 +1304,46 @@ export const OccurrenceForm: React.FC<OccurrenceFormProps> = ({
             <Share2 className="w-4 h-4" />
             Notifikasi WhatsApp
           </button>
+
           <button
             type="submit"
-            className="px-5 py-2 bg-amber-700 hover:bg-amber-600 text-white rounded-lg text-xs font-bold flex items-center gap-2 transition shadow-md cursor-pointer"
+            className={`px-5 py-2 text-white rounded-lg text-xs font-bold flex items-center gap-2 transition shadow-md cursor-pointer ${
+              initialData?.isDraft 
+                ? 'bg-emerald-600 hover:bg-emerald-500' 
+                : isEditMode 
+                ? 'bg-amber-600 hover:bg-amber-500' 
+                : 'bg-amber-700 hover:bg-amber-600'
+            }`}
           >
             <Save className="w-4 h-4" />
-            Simpan Laporan Occurrence
+            <span>
+              {initialData?.isDraft 
+                ? 'Terbitkan Laporan Resmi' 
+                : isEditMode 
+                ? 'Simpan Perubahan Dokumen WHR' 
+                : 'Simpan Laporan WHR (Hazard Report)'}
+            </span>
           </button>
         </div>
       </div>
+
+      {/* Interactive Leaflet Airside Map Modal */}
+      <IncidentLocationPickerModal
+        isOpen={isMapPickerOpen}
+        onClose={() => setIsMapPickerOpen(false)}
+        initialLatitude={coordinates?.latitude}
+        initialLongitude={coordinates?.longitude}
+        onSelectLocation={(data) => {
+          setLokasi(data.lokasi);
+          setGridLocation(data.gridLocation);
+          setRunwayTaxiwayArea(data.runwayTaxiway);
+          setCoordinates({
+            latitude: data.latitude,
+            longitude: data.longitude,
+            distanceFromArpKm: data.distanceFromArpKm
+          });
+        }}
+      />
     </form>
   );
 };

@@ -1,1 +1,185 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design Tokens */
+:root {
+  --bg-page: #F5F7FA;
+  --bg-card: #FFFFFF;
+  --border-color: #E2E8F0;
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --accent-primary: #2563EB;
+  --color-safe: #10B981;
+  --color-occurrence: #F59E0B;
+  --color-danger: #EF4444;
+  --color-ai: #8B5CF6;
+}
+
+html {
+  color-scheme: light;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+}
+
+body {
+  background-color: #F5F7FA;
+  color: #0F172A;
+  font-family: inherit;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Dark mode design tokens when .dark is active */
+html.dark {
+  color-scheme: dark;
+  --bg-page: #020617;
+  --bg-card: #0F172A;
+  --border-color: #334155;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+}
+
+html.dark body {
+  background-color: #020617;
+  color: #f1f5f9;
+}
+
+/* Tab transition animation (smooth fade-in & slide-up) */
+@keyframes tabFadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-transition-enter {
+  animation: tabFadeSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Penanda Arsir Radius 3 km (Merah - Zona Bahaya Kritis) */
+.leaflet-3km-hatch-circle {
+  fill: url(#hatch-radius-3km) !important;
+  fill-opacity: 0.92 !important;
+  stroke: #dc2626 !important;
+  stroke-width: 3.5px !important;
+  stroke-dasharray: 8, 6 !important;
+  cursor: pointer;
+  transition: fill-opacity 0.2s ease, stroke-width 0.2s ease;
+}
+
+.leaflet-3km-hatch-circle:hover {
+  fill-opacity: 1 !important;
+  stroke-width: 4.5px !important;
+}
+
+/* Penanda Arsir Radius 5 km (Kuning - Perimeter Airside) */
+.leaflet-5km-hatch-circle {
+  fill: url(#hatch-radius-5km) !important;
+  fill-opacity: 0.88 !important;
+  stroke: #ca8a04 !important;
+  stroke-width: 3.5px !important;
+  stroke-dasharray: 10, 6 !important;
+  cursor: pointer;
+  transition: fill-opacity 0.2s ease, stroke-width 0.2s ease;
+}
+
+.leaflet-5km-hatch-circle:hover {
+  fill-opacity: 1 !important;
+  stroke-width: 4.5px !important;
+}
+
+/* Penanda Arsir Radius 13 km (Orange - ICAO Doc 9137 7 NM) */
+.leaflet-13km-hatch-circle {
+  fill: url(#hatch-radius-13km) !important;
+  fill-opacity: 0.85 !important;
+  stroke: #ea580c !important;
+  stroke-width: 3.5px !important;
+  stroke-dasharray: 14, 8 !important;
+  cursor: pointer;
+  transition: fill-opacity 0.2s ease, stroke-width 0.2s ease;
+}
+
+.leaflet-13km-hatch-circle:hover {
+  fill-opacity: 1 !important;
+  stroke-width: 4.5px !important;
+}
+
+/* Swatch mini arsir untuk preview pada legenda */
+.mini-hatch-swatch-red {
+  background: repeating-linear-gradient(
+    45deg,
+    #dc2626,
+    #dc2626 2.5px,
+    #fee2e2 2.5px,
+    #fee2e2 6px
+  );
+}
+
+.dark .mini-hatch-swatch-red {
+  background: repeating-linear-gradient(
+    45deg,
+    #b91c1c,
+    #b91c1c 2.5px,
+    #7f1d1d 2.5px,
+    #7f1d1d 6px
+  );
+}
+
+.mini-hatch-swatch-yellow {
+  background: repeating-linear-gradient(
+    45deg,
+    #ca8a04,
+    #ca8a04 2.5px,
+    #fef9c3 2.5px,
+    #fef9c3 6px
+  );
+}
+
+.dark .mini-hatch-swatch-yellow {
+  background: repeating-linear-gradient(
+    45deg,
+    #a16207,
+    #a16207 2.5px,
+    #713f12 2.5px,
+    #713f12 6px
+  );
+}
+
+.mini-hatch-swatch-orange {
+  background: repeating-linear-gradient(
+    45deg,
+    #ea580c,
+    #ea580c 2.5px,
+    #ffedd5 2.5px,
+    #ffedd5 6px
+  );
+}
+
+.dark .mini-hatch-swatch-orange {
+  background: repeating-linear-gradient(
+    45deg,
+    #c2410c,
+    #c2410c 2.5px,
+    #7c2d12 2.5px,
+    #7c2d12 6px
+  );
+}
+
+/* Legacy alias */
+.mini-hatch-swatch {
+  background: repeating-linear-gradient(
+    45deg,
+    #ea580c,
+    #ea580c 2px,
+    #ffedd5 2px,
+    #ffedd5 6px
+  );
+}
+
+

@@ -114,6 +114,85 @@
         "messageSummary": { "type": "string" }
       },
       "required": ["id", "timestamp", "reportNumber", "recipientName"]
+    },
+    "VehicleCheckReport": {
+      "title": "VehicleCheckReport",
+      "description": "Laporan pengecekan kendaraan operasional WHU tiap dinas pagi dan malam untuk serah terima tugas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reportNumber": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "hariTanggal": { "type": "string" },
+        "dinas": { "type": "string" },
+        "waktuPengecekan": { "type": "string" },
+        "pleton": { "type": "string" },
+        "petugasMenyerahkan": { "type": "string" },
+        "petugasMenerima": { "type": "string" },
+        "supervisorLead": { "type": "string" },
+        "nomorLambung": { "type": "string" },
+        "platNomor": { "type": "string" },
+        "merkModel": { "type": "string" },
+        "odometerKM": { "type": "number" },
+        "levelBBM": { "type": "string" },
+        "statusKelayakan": { "type": "string" },
+        "catatanSerahTerima": { "type": "string" }
+      },
+      "required": ["id", "reportNumber", "hariTanggal", "dinas", "nomorLambung", "petugasMenyerahkan", "petugasMenerima"]
+    },
+    "MonthlyReportDocument": {
+      "title": "MonthlyReportDocument",
+      "description": "Dokumen arsip laporan bulanan terdahulu unit Wildlife Hazard dalam format PDF atau Word",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "periodeBulan": { "type": "string" },
+        "periodeTahun": { "type": "number" },
+        "kategoriLaporan": { "type": "string" },
+        "fileName": { "type": "string" },
+        "fileType": { "type": "string" },
+        "fileSize": { "type": "number" },
+        "uploadedAt": { "type": "string" },
+        "uploadedBy": { "type": "string" },
+        "pleton": { "type": "string" },
+        "catatanRingkasan": { "type": "string" },
+        "statusVerifikasi": { "type": "string" }
+      },
+      "required": ["id", "title", "periodeBulan", "periodeTahun", "fileName", "fileType", "uploadedAt"]
+    },
+    "DutyRosterDocument": {
+      "title": "DutyRosterDocument",
+      "description": "Dokumen dan berkas jadwal dinas resmi unit Wildlife Hazard dalam format Excel (.xlsx/.xls) atau PDF",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "periodeBulan": { "type": "string" },
+        "periodeTahun": { "type": "number" },
+        "fileName": { "type": "string" },
+        "fileType": { "type": "string" },
+        "fileSize": { "type": "number" },
+        "uploadedAt": { "type": "string" },
+        "uploadedBy": { "type": "string" },
+        "disahkanOleh": { "type": "string" },
+        "catatan": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "title", "periodeBulan", "periodeTahun", "fileName", "fileType", "uploadedAt"]
+    },
+    "ManualMonthlyWSRDoc": {
+      "title": "ManualMonthlyWSRDoc",
+      "description": "Pengisian dan override manual data insiden WSR per bulan per tahun",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "year": { "type": "number" },
+        "entries": { "type": "object" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["id", "year", "entries", "updatedAt"]
     }
   },
   "firestore": {
@@ -129,6 +208,10 @@
       "schema": "WildlifeStrikeReport",
       "description": "Koleksi insiden wildlife strike pesawat udara"
     },
+    "/vehicle_reports/{reportId}": {
+      "schema": "VehicleCheckReport",
+      "description": "Koleksi laporan pengecekan kendaraan operasional serah terima dinas"
+    },
     "/management_recipients/{recipientId}": {
       "schema": "ManagementRecipient",
       "description": "Koleksi kontak pejabat dan pemangku kepentingan untuk broadcast"
@@ -136,6 +219,18 @@
     "/notification_logs/{logId}": {
       "schema": "NotificationLog",
       "description": "Koleksi riwayat broadcast dan transmisi laporan"
+    },
+    "/monthly_report_documents/{docId}": {
+      "schema": "MonthlyReportDocument",
+      "description": "Koleksi arsip berkas laporan bulanan terdahulu dalam format PDF, Word, dan Excel"
+    },
+    "/duty_roster_documents/{docId}": {
+      "schema": "DutyRosterDocument",
+      "description": "Koleksi berkas roster jadwal dinas operasional resmi dalam format Excel dan PDF"
+    },
+    "/monthly_wsr_manual/{docId}": {
+      "schema": "ManualMonthlyWSRDoc",
+      "description": "Koleksi data manual input kejadian WSR bulanan tersinkronisasi real-time"
     }
   }
 }

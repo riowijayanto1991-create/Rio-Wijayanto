@@ -1,0 +1,28 @@
+{
+  "airport": {
+    "id": "WIII",
+    "icao": "WIII",
+    "iata": "CGK",
+    "name": "Soekarno-Hatta International Airport",
+    "city": "Tangerang",
+    "province": "Banten",
+    "country": "Indonesia",
+    "coordinates": {
+      "latitude": -6.1256,
+      "longitude": 106.6559,
+      "aipVerification": "Verified against AIP Indonesia WIII AD 2.2 ARP S 06°07'32\" E 106°39'21\""
+    },
+    "elevation_m": 10.4,
+    "elevation_ft": 34,
+    "timezone": "Asia/Jakarta",
+    "timezoneLabel": "WIB",
+    "utcOffsetHours": 7,
+    "sources": {
+      "primary": "Open-Meteo Numerical Weather Prediction Model",
+      "primaryDisclaimer": "Model data, not an airport sensor reading",
+      "secondary": "AviationWeather.gov / NOAA & ICAO Official METAR Feed (WIII)",
+      "cacheTtlMinutes": 10,
+      "staleThresholdMinutes": 30
+    }
+  }
+}

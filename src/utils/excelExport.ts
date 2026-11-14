@@ -1,10 +1,11 @@
 import * as XLSX from 'xlsx';
-import { PatrolReport, OccurrenceReport, WildlifeStrikeReport } from '../types';
+import { PatrolReport, OccurrenceReport, WildlifeStrikeReport, VehicleCheckReport } from '../types';
 
 export const exportAllToExcel = (
   patrols: PatrolReport[],
   occurrences: OccurrenceReport[],
-  strikes: WildlifeStrikeReport[]
+  strikes: WildlifeStrikeReport[],
+  vehicles: VehicleCheckReport[] = []
 ) => {
   const wb = XLSX.utils.book_new();
 
@@ -23,6 +24,10 @@ export const exportAllToExcel = (
     Suhu: p.suhu,
     'Situasi Operasional': p.situasiOperasional,
     'Rute Patroli': p.rutePatroli,
+    'Grid Map': p.gridLocation || '-',
+    'Koordinat GPS': p.coordinates ? `${p.coordinates.latitude}, ${p.coordinates.longitude}` : '-',
+    'Jarak ke ARP Bandara': p.coordinates ? `${p.coordinates.distanceFromArpKm} km` : '-',
+    'Status Radius Operasional': p.coordinates ? (p.coordinates.isWithinOperationalRadius ? 'Dalam Radius' : 'Di Luar Radius') : '-',
     'Total Populasi Satwa': p.totalPopulasiTeramati,
     'Rincian Satwa': p.temuanSatwa.map(s => `${s.spesies} (${s.jumlah} ekor)`).join('; '),
     'Kondisi Vegetasi': p.kondisiVegetasi,
@@ -108,14 +113,53 @@ export const exportAllToExcel = (
   const wsStrike = XLSX.utils.json_to_sheet(strikeData);
   XLSX.utils.book_append_sheet(wb, wsStrike, 'Laporan Wildlife Strike');
 
+  // Sheet 4: Pengecekan Kendaraan Operasional
+  const vehicleData = vehicles.map((v, idx) => ({
+    No: idx + 1,
+    'No Dokumen': v.reportNumber,
+    'Hari / Tanggal': v.hariTanggal,
+    Dinas: v.dinas,
+    Pleton: v.pleton,
+    'Waktu Pengecekan': v.waktuPengecekan,
+    'No. Lambung': v.nomorLambung,
+    'Plat Nomor': v.platNomor,
+    'Merk / Tipe': v.merkModel,
+    'Odometer (KM)': v.odometerKM,
+    'Level BBM': v.levelBBM,
+    'Status Kelayakan': v.statusKelayakan,
+    'Rotari Airside': v.lampuRotaryStroboAirside,
+    'Oli & Radiator': v.oliMesinCoolant,
+    'Sistem Rem': v.sistemRemTangan,
+    'Kondisi Ban': v.kondisiBanTekanan,
+    'Lampu Utama': v.lampuUtamaJauhDekat,
+    'Radio HT Airside': v.radioAirsideHT,
+    'Bird Scarer': v.birdScarerSoundMegaphone,
+    'Laser Burung': v.laserBirdDisperser,
+    'Pistol Suar (Flare)': v.pyroFlareGun,
+    'Amunisi Suar (Butir)': v.amunisiFlareButir,
+    'Teropong': v.binokularTeropong,
+    'Senter Taktis': v.senterTaktisSearchlight,
+    'APAR Kendaraan': v.aparKendaraan,
+    'Kotak P3K': v.kotakP3K,
+    'Petugas Menyerahkan': v.petugasMenyerahkan,
+    'Petugas Menerima': v.petugasMenerima,
+    'Supervisor Lead': v.supervisorLead,
+    'Catatan Kerusakan': v.catatanKerusakanKendala || '-',
+    'Catatan Serah Terima': v.catatanSerahTerima || '-'
+  }));
+  const wsVehicle = XLSX.utils.json_to_sheet(vehicleData);
+  XLSX.utils.book_append_sheet(wb, wsVehicle, 'Pengecekan Kendaraan');
+
   // Summary sheet
   const summary = [
     { Parameter: 'Nama Unit', Nilai: 'Unit Wildlife Hazard PT Angkasa Pura Indonesia' },
     { Parameter: 'Total Laporan Patroli Tercatat', Nilai: patrols.length },
     { Parameter: 'Total Laporan Occurrence', Nilai: occurrences.length },
     { Parameter: 'Total Insiden Wildlife Strike', Nilai: strikes.length },
+    { Parameter: 'Total Laporan Pengecekan Kendaraan', Nilai: vehicles.length },
     { Parameter: 'Total Populasi Satwa Teramati (Patroli)', Nilai: patrols.reduce((acc, p) => acc + p.totalPopulasiTeramati, 0) },
     { Parameter: 'Insiden Strike Ada Kerusakan', Nilai: strikes.filter(s => s.indikasiKerusakan === 'Ada').length },
+    { Parameter: 'Kendaraan Siap Operasi', Nilai: vehicles.filter(v => v.statusKelayakan.includes('SERVICEABLE') && !v.statusKelayakan.includes('LIMITATION')).length },
     { Parameter: 'Tanggal Export Data', Nilai: new Date().toLocaleString('id-ID') }
   ];
   const wsSummary = XLSX.utils.json_to_sheet(summary);
@@ -135,6 +179,10 @@ export const exportSinglePatrolToExcel = (report: PatrolReport) => {
     { Section: 'INFORMASI UMUM', Field: 'Cuaca & Suhu', Value: `${report.cuaca}, ${report.suhu}` },
     { Section: 'INFORMASI UMUM', Field: 'Situasi Operasional', Value: report.situasiOperasional },
     { Section: 'RUTE', Field: 'Rute Patroli', Value: report.rutePatroli },
+    { Section: 'RUTE', Field: 'Grid Map', Value: report.gridLocation || '-' },
+    { Section: 'RUTE', Field: 'Koordinat GPS', Value: report.coordinates ? `Lat ${report.coordinates.latitude}, Long ${report.coordinates.longitude}` : '-' },
+    { Section: 'RUTE', Field: 'Jarak ke ARP Bandara', Value: report.coordinates ? `${report.coordinates.distanceFromArpKm} km` : '-' },
+    { Section: 'RUTE', Field: 'Status Radius Operasional', Value: report.coordinates ? (report.coordinates.isWithinOperationalRadius ? `Dalam Radius (Maks ${report.coordinates.maxRadiusAllowedKm} km)` : `Di Luar Radius (Maks ${report.coordinates.maxRadiusAllowedKm} km)`) : '-' },
     { Section: 'HABITAT', Field: 'Kondisi Vegetasi', Value: report.kondisiVegetasi },
     { Section: 'HABITAT', Field: 'Kondisi Drainase', Value: report.kondisiDrainase },
     { Section: 'HABITAT', Field: 'Potensi Attractant', Value: report.potensiAttractant },

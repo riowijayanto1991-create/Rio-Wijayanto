@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "airportIcao": "WIII",
+  "approvalStatus": "PENDING_WILDLIFE_HAZARD_TEAM_APPROVAL",
+  "description": "Configurable evaluation rules for Bird Activity Risk at Soekarno-Hatta (WIII). Thresholds are operational placeholders that must be calibrated and officially approved by the Airport Wildlife Hazard Management Unit.",
+  "rules": [
+    {
+      "id": "RULE_THUNDERSTORM_CONVECTIVE_DISPLACEMENT",
+      "priority": 100,
+      "riskLevel": "HIGH",
+      "title": "Badai Petir Tropis & Perpindahan Kawanan Satwa Terkejut",
+      "conditions": {
+        "isThunderstorm": true
+      },
+      "description": "Aktivitas badai petir / konvektif kuat sering menyebabkan kawanan burung air (kuntul, blekok) dan layang-layang terbang rendah tergesa-gesa mencari perlindungan di sekitar runway infield.",
+      "thresholdsNote": "[PLACEHOLDER - BUTUH PERSETUJUAN TIM WHMS]: Terpicu otomatis jika weather code WMO mengindikasikan petir/badai (WMO 95, 96, 99)."
+    },
+    {
+      "id": "RULE_CREPUSCULAR_PEAK_LOW_VISIBILITY",
+      "priority": 90,
+      "riskLevel": "HIGH",
+      "title": "Jam Puncak Kerepuskular Fajar/Senja dengan Visibilitas Rendah",
+      "conditions": {
+        "timeOfDay": "CREPUSCULAR",
+        "maxVisibilityKm": 4.0
+      },
+      "description": "Pergerakan massal burung pakan pagi (05:30-07:30 WIB) atau sore (17:30-18:45 WIB) bertepatan dengan kabut pagi atau hujan pembatas pandangan (< 4 km), meningkatkan risiko tabrakan pesawat akibat reaksi satwa terlambat.",
+      "thresholdsNote": "[PLACEHOLDER - BUTUH PERSETUJUAN TIM WHMS]: Jam fajar 05:30-07:30 WIB, jam senja 17:30-18:45 WIB, visibilitas < 4.0 km."
+    },
+    {
+      "id": "RULE_THERMAL_SOARING_CONDITIONS",
+      "priority": 75,
+      "riskLevel": "MODERATE",
+      "title": "Thermal Lift Tinggi & Angin Ringan (Potensi Burung Pemangsa Melayang)",
+      "conditions": {
+        "minThermalHeightM": 750,
+        "maxWindSpeedKt": 9
+      },
+      "description": "Kolom termal tinggi (> 750 m) dengan angin permukaan tenang/ringan (< 9 kt) memicu burung pemangsa (elang tikus, elang bondol) dan burung layang-layang melayang pada ketinggian jalur pendekatan instrumen runway.",
+      "thresholdsNote": "[PLACEHOLDER - BUTUH PERSETUJUAN TIM WHMS]: Thermal height > 750m dan angin permukaan < 9 knot."
+    },
+    {
+      "id": "RULE_POST_RAIN_FORAGING",
+      "priority": 70,
+      "riskLevel": "MODERATE",
+      "title": "Kondisi Basah Pasca Hujan (Invertebrata & Cacing Muncul di Rumput Landas)",
+      "conditions": {
+        "recentRainfallMm": 2.0,
+        "humidityMin": 85
+      },
+      "description": "Genangan air dan rumput basah setelah hujan memicu cacing dan serangga naik ke permukaan rumput strip, menarik kawanan burung pemakan serangga dan burung air ke tepi runway.",
+      "thresholdsNote": "[PLACEHOLDER - BUTUH PERSETUJUAN TIM WHMS]: Curah hujan > 2.0 mm dan kelembapan udara > 85%."
+    },
+    {
+      "id": "RULE_MODERATE_CREPUSCULAR_WINDOW",
+      "priority": 60,
+      "riskLevel": "MODERATE",
+      "title": "Jendela Waktu Kerepuskular Rutin (Pagi / Sore)",
+      "conditions": {
+        "timeOfDay": "CREPUSCULAR"
+      },
+      "description": "Periode aktif transit burung antara habitat sarang di Teluk Jakarta/rawa utara bandara menuju area mencari makan di daratan.",
+      "thresholdsNote": "[PLACEHOLDER - BUTUH PERSETUJUAN TIM WHMS]: Terpicu pada jam 05:30-07:30 WIB atau 17:30-18:45 WIB."
+    },
+    {
+      "id": "RULE_HIGH_WINDS_GROUND_CONGREGATION",
+      "priority": 50,
+      "riskLevel": "MODERATE",
+      "title": "Angin Kencang (Satwa Berkerumun di Tanah Landas Pacu)",
+      "conditions": {
+        "minWindSpeedKt": 18
+      },
+      "description": "Angin kencang (> 18 kt) menyebabkan burung enggan terbang tinggi dan memilih berkumpul di permukaan aspal runway atau shoulder terlindung.",
+      "thresholdsNote": "[PLACEHOLDER - BUTUH PERSETUJUAN TIM WHMS]: Kecepatan angin permukaan > 18 knot."
+    },
+    {
+      "id": "RULE_DEFAULT_BASELINE",
+      "priority": 10,
+      "riskLevel": "LOW",
+      "title": "Kondisi Cuaca Standar - Risiko Aktivitas Satwa Terkendali",
+      "conditions": {},
+      "description": "Tidak ada pemicu meteorologis ekstrem. Tetap lakukan patroli satwa rutin sesuai jadwal dinas pleton aktif.",
+      "thresholdsNote": "[BASELINE]: Diterapkan jika tidak ada aturan ambang batas khusus yang terlampaui."
+    }
+  ]
+}

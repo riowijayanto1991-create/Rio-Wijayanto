@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 270" width="100%" height="100%">
+  <!-- Soekarno-Hatta -->
+  <text x="10" y="92" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', Helvetica, Arial, sans-serif" font-size="96" font-weight="700" fill="#33373B" letter-spacing="-1">Soekarno-Hatta</text>
+  <!-- International Airport -->
+  <text x="10" y="192" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', Helvetica, Arial, sans-serif" font-size="96" font-weight="700" fill="#33373B" letter-spacing="-1">International Airport</text>
+  <!-- by injourney Airports -->
+  <g transform="translate(295, 248)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', Helvetica, Arial, sans-serif" font-size="38" font-weight="300" fill="#52575C">by</text>
+    <text x="46" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', Helvetica, Arial, sans-serif" font-size="38" font-weight="700" fill="#33373B">inj</text>
+    <!-- InJourney 4-colored circle emblem -->
+    <g transform="translate(108, -12)">
+      <!-- Top-Left: Cyan -->
+      <path d="M -2.2 -3.4 A 10 10 0 0 0 -9.8 -2 L -4.4 -0.9 A 4.5 4.5 0 0 1 -1 -1.5 Z" fill="#00A3E0"/>
+      <!-- Top-Right: Orange -->
+      <path d="M 2.2 -3.4 A 10 10 0 0 1 9.8 -2 L 4.4 -0.9 A 4.5 4.5 0 0 0 1 -1.5 Z" fill="#FF6B35"/>
+      <!-- Bottom-Right: Golden Yellow -->
+      <path d="M 2.2 3.4 A 10 10 0 0 0 9.8 2 L 4.4 0.9 A 4.5 4.5 0 0 1 1 1.5 Z" fill="#F59E0B"/>
+      <!-- Bottom-Left: Emerald Green -->
+      <path d="M -2.2 3.4 A 10 10 0 0 1 -9.8 2 L -4.4 0.9 A 4.5 4.5 0 0 0 -1 1.5 Z" fill="#10B981"/>
+    </g>
+    <text x="128" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', Helvetica, Arial, sans-serif" font-size="38" font-weight="700" fill="#33373B">urney</text>
+    <text x="228" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', Helvetica, Arial, sans-serif" font-size="38" font-weight="400" fill="#52575C"> Airports</text>
+  </g>
+</svg>

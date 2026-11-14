@@ -24,7 +24,7 @@ service cloud.firestore {
         && request.resource.data.reportNumber is string
         && request.resource.data.reportNumber.size() > 0
         && request.resource.data.reportNumber.size() <= 64;
-      allow delete: if false;
+      allow delete: if isValidId(reportId);
     }
 
     // Laporan Occurrence Satwa
@@ -34,7 +34,7 @@ service cloud.firestore {
         && request.resource.data.reportNumber is string
         && request.resource.data.reportNumber.size() > 0
         && request.resource.data.reportNumber.size() <= 64;
-      allow delete: if false;
+      allow delete: if isValidId(reportId);
     }
 
     // Laporan Wildlife Strike
@@ -44,7 +44,17 @@ service cloud.firestore {
         && request.resource.data.reportNumber is string
         && request.resource.data.reportNumber.size() > 0
         && request.resource.data.reportNumber.size() <= 64;
-      allow delete: if false;
+      allow delete: if isValidId(reportId);
+    }
+
+    // Laporan Pengecekan Kendaraan Operasional (Serah Terima Tugas Dinas Pagi & Malam)
+    match /vehicle_reports/{reportId} {
+      allow read: if true;
+      allow create, update: if isValidId(reportId)
+        && request.resource.data.reportNumber is string
+        && request.resource.data.reportNumber.size() > 0
+        && request.resource.data.reportNumber.size() <= 64;
+      allow delete: if isValidId(reportId);
     }
 
     // Daftar Pejabat / Kontak Broadcast
@@ -62,6 +72,34 @@ service cloud.firestore {
       allow create: if isValidId(logId)
         && request.resource.data.reportNumber is string;
       allow update, delete: if false;
+    }
+
+    // Dokumen Laporan Bulanan Terdahulu (PDF / Word / Excel)
+    match /monthly_report_documents/{docId} {
+      allow read: if true;
+      allow create, update: if isValidId(docId)
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0;
+      allow delete: if isValidId(docId);
+    }
+
+    // Dokumen Roster Dinas (Excel / PDF)
+    match /duty_roster_documents/{docId} {
+      allow read: if true;
+      allow create, update: if isValidId(docId)
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0;
+      allow delete: if isValidId(docId);
+    }
+
+    // Pengaturan Sistem & Susunan Personel Roster (Real-time Sync Antar Device)
+    match /whms_settings/{settingId} {
+      allow read, write: if true;
+    }
+
+    // Pengisian Manual Kejadian WSR Per Bulan (Real-time Sync Antar Device)
+    match /monthly_wsr_manual/{docId} {
+      allow read, write: if true;
     }
   }
 }

@@ -1,0 +1,461 @@
+{
+  "users": [
+    {
+      "id": "usr-superadmin-01",
+      "email": "superadmin.whms@cgk-airport.co.id",
+      "fullName": "Super Administrator WHMS (Primary)",
+      "role": "SuperAdmin",
+      "assignedAirports": [
+        "*"
+      ],
+      "isActive": true,
+      "mustChangePassword": true,
+      "mfaEnrolled": false,
+      "mfaSecret": "UXY2V7ZLT5JCU2T5J6EP",
+      "recoveryCodesHashed": [
+        "ac781f137704ff8ce1c38cadfe537f2011971ef0ffcf42fd53c7c60b769d3a11",
+        "d7f68f191888eabce36a2310e8e2de518e064b54526571add6a2b2f11b078e25",
+        "e6670c76430b562a3eabb1af086b2ecc58822295bbf487e657b59aca4f4595a9",
+        "b979ee59d437f257bbb8a8e523b3526aba00f0c529715745d06c619a23cbc54e",
+        "4c5e0e122276a5ffbb5a2861f7e65085aba30b7de1cceb2c5bb82d7d33c70bf1",
+        "d918711f67f4ed203dd598810e855947dd0d3c28c18ddf2972c7da8ae1bb9cb8",
+        "8689cdc42a1f0702c22a4f2f0ee19e41ea5f1f123848458f7c9deb7e76dbd379",
+        "66d2553aca7b2eea2e80964d8454513beab0dad068c50ad2221e66a3ece8f729",
+        "90f6e587018f69be47191e2839456f3c425cb160ec3e88f008fb30531e954e6d",
+        "e6737032f8fe3104e79f72519ec39a8d4dc93e6a1b89a9d3c3db980d8d7018b8"
+      ],
+      "securityStamp": "7d50b5450843d328c8b1d38a42b1111c",
+      "passwordHash": "2213f623ee50ee1bbe2b889de97c6790bd0422e37e21a3b27dc783c08d1218da5771d42ba910c1f8c382d826671e4de6b25816d25ec5d041f2a79cb74d6a69fc",
+      "passwordSalt": "cbae8c4486d50eeb7bf8ab3dc95badee",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
+      "createdAt": "2026-11-05T04:06:03.137Z",
+      "lastLoginAt": null,
+      "lastPasswordChangedAt": "2026-11-05T04:06:03.137Z"
+    },
+    {
+      "id": "usr-superadmin-02",
+      "email": "secadmin.whms@cgk-airport.co.id",
+      "fullName": "Super Administrator WHMS (Secondary)",
+      "role": "SuperAdmin",
+      "assignedAirports": [
+        "*"
+      ],
+      "isActive": true,
+      "mustChangePassword": true,
+      "mfaEnrolled": false,
+      "mfaSecret": "ZPFIQT7JO6GXPS2L6X7C",
+      "recoveryCodesHashed": [
+        "cd7c0f17f8ac75962076473cca6cc574e34c623165be1385583832e8caa9c7c5",
+        "0abe657206eddb0739979883a1a5a6546fb9af7b37083722e4c8d8171f656262",
+        "0e92634a3864c6d6961e05708b20007e0b957fc6d9f7995ab771fe56c74535bf",
+        "6233ffe23d03ffe938f7e7ad3d69aeba87bb82e811fa15d3a49232e904faa176",
+        "ba0308fa037e59d35f035c01bc62a6dc813fa3e8441e7606edf98f9a6556ec7a",
+        "4d439157b59d356fea2614070e82a68588970ac8f4f9811f8ec00c328b290779",
+        "6392efb2b84a99c329dc2061c774a5ce802426529229a5f00daab00c6bc9ee67",
+        "16f7abad81c9b288cb84ba56737fdc235a17c9df6973b1e8ca0b39bba49dcda7",
+        "dbc03d57e9d020564eb1a1983e6d77cefbb86826658c06faa05bfdf3dafb9be7",
+        "20d1876c4a247dbbf61369aac55542603ec60d8898cc46686c41ba1d81f48db4"
+      ],
+      "securityStamp": "b5078713dc613d141718d76a231c8868",
+      "passwordHash": "dcdb0dfd11d7e912e74a7dba1fa8c388691672da83af9f8d5232c3cf748e8a68a3c857b46421a70ccf61bec83801c49a84c1206a5ca352279f81483f4734faf1",
+      "passwordSalt": "ffd048df23c382c52b8079f2dd44c233",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
+      "createdAt": "2026-11-05T04:06:03.218Z",
+      "lastLoginAt": null,
+      "lastPasswordChangedAt": "2026-11-05T04:06:03.218Z"
+    },
+    {
+      "id": "usr-airport-admin-01",
+      "email": "airportadmin.cgk@cgk-airport.co.id",
+      "fullName": "Bambang Soedirman (Airport Admin CGK)",
+      "role": "AirportAdmin",
+      "assignedAirports": [
+        "WIII"
+      ],
+      "isActive": true,
+      "mustChangePassword": false,
+      "mfaEnrolled": true,
+      "mfaSecret": "H6VAJ6H4JMVT3E3VAEIX",
+      "recoveryCodesHashed": [
+        "237caa79dff7a9f07162ddb9346e3d6fd357e15bad06e92047072b7abbf35c90",
+        "c55ecbd96eccfdbbc2c32ae7313fad3d5f114ad6da3f22ef6aeeb427010ac6c1",
+        "fe66c8d3557ae65f149780db2165bc1c461611b437fc277d395db4c905f9a5f2",
+        "6499a8cf31a5800677136fb8fab297b67bd589cdde55d077753a802bf3bff900",
+        "d9281ad2337d350f3191ac0cbe90161b3b90c13cfc92e698560dbbf514e634f2",
+        "de7e786f0a6f522070611f54cd1a2162b8c3db4f44e27bc73877be27e9bf7953",
+        "7998ad0a48555b966671fde57271eb4284f15db076c139be3bab528922874f7b",
+        "5f889ea7825d615610185a40ff9d45871e38aba6ab8a25249af5a95978453044",
+        "8a88a935098464aae9f3212d70ce0c7cbf656f023841e4ec3b1d96d4d31a1853",
+        "768a77fdc6d069be54d37c9c56ef92d2555892951d8f733d1693ef412811cfb6"
+      ],
+      "securityStamp": "d4abc33540f721b4cccc1c63dce88125",
+      "passwordHash": "ebc5038d632c90f22eea3ccc85ec620778cc38ac6344fdda09d2e30ad51e24f19a61f637b48b1c9cb35915fe95595cda50161b83ca0d3e333c480d12c9345b25",
+      "passwordSalt": "a69cbc536675c2084f102565694b0c27",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
+      "createdAt": "2026-11-05T04:06:03.537Z",
+      "lastLoginAt": null,
+      "lastPasswordChangedAt": "2026-11-05T04:06:03.537Z"
+    },
+    {
+      "id": "usr-officer-01",
+      "email": "officer.nurjaya@cgk-airport.co.id",
+      "fullName": "Nurjaya (Wildlife Officer Pleton Alpha)",
+      "role": "WildlifeOfficer",
+      "assignedAirports": [
+        "WIII"
+      ],
+      "isActive": true,
+      "mustChangePassword": false,
+      "mfaEnrolled": false,
+      "securityStamp": "1445eaf403aed4397b1024a52f0fd362",
+      "passwordHash": "f7bb03288e852f0b115f195cac1d68c576e1979d7bd02cb3ec00c6a76eee787d6518dd34cf403141e2519753016bc4a0bb8a04d4cefe59c2b110d184bc8444d7",
+      "passwordSalt": "fe7533b0c5eb486131781dd482b36a10",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
+      "createdAt": "2026-11-05T04:06:03.537Z",
+      "lastLoginAt": null,
+      "lastPasswordChangedAt": "2026-11-05T04:06:03.537Z"
+    },
+    {
+      "id": "usr-reviewer-01",
+      "email": "reviewer.danil@cgk-airport.co.id",
+      "fullName": "Danil S. (Data Reviewer & Quality Control)",
+      "role": "DataReviewer",
+      "assignedAirports": [
+        "WIII"
+      ],
+      "isActive": true,
+      "mustChangePassword": false,
+      "mfaEnrolled": true,
+      "mfaSecret": "XNQIVAJ3NEEVO7GHZHIG",
+      "recoveryCodesHashed": [
+        "5980fd6c4f98372a2c56d47c5744281814e595e00a1f6221f82942fde2a8e324",
+        "e4441defe4bca72da81e72f3888caf8aeb9d2d868f702b84ed1b3c1dc3267eb0",
+        "0f70ba7f210fbfa2a085f70ccdd3d5b604a7355aaf13f40db0b2202b03f47789",
+        "1e5c98b1e56bf24ac9f2b912bf93777410ea7e765bf93d22eeb6746c66e65f6e",
+        "982dd8d73fad0c1cdb6517a475308a022146e14208a784fa6f9b2f4da5675fbf",
+        "aa85461fc2728d3179874e4541dfc4e310c5b0820f67cef45fac763bf860c5d6",
+        "43988f526a19bb7541c11aa1891a8b179383b67adca45861b9fd1d84c0dc9401",
+        "c0b562c8aa0974aa5f4c65a952b05ee0bf22f8240579764668753011cb7393d0",
+        "e5a8ba51089baf1a6d7efb76b84c4a4175771275d6119ec9b547c71c10790008",
+        "60cbefee2c4d2366734c866e17adda6fdc466c1e889740e388bb1c6e7fbbf908"
+      ],
+      "securityStamp": "d4e1085ca745a86a9e884b0646f336be",
+      "passwordHash": "a80bad06f59e0680779d598bfd902d0c383633436071a524fe4ba3c9175eb161c0ddfc9391b0019d7dcc28bc34f128cf3746368ec4593dd6acca149d033e8d1d",
+      "passwordSalt": "49c03ee6700938d5b88472477b7a003e",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
+      "createdAt": "2026-11-05T04:06:03.537Z",
+      "lastLoginAt": null,
+      "lastPasswordChangedAt": "2026-11-05T04:06:03.537Z"
+    },
+    {
+      "id": "usr-viewer-01",
+      "email": "viewer.dinas@cgk-airport.co.id",
+      "fullName": "Viewer Otoritas Bandara Wilayah I",
+      "role": "Viewer",
+      "assignedAirports": [
+        "WIII"
+      ],
+      "isActive": true,
+      "mustChangePassword": false,
+      "mfaEnrolled": false,
+      "securityStamp": "1096f91d0d2dd8234e76089d37c4b7b4",
+      "passwordHash": "1dafae3e58c741f6208d4d9a63ca4af4d7cb9046f5dc8323db18de341d32260eb79533bc25a241522819479d29b37b0ecb930b004a75bdaae42d6a05d8c57e23",
+      "passwordSalt": "2b6cbcce5ffb56b0ff095151fc8add9b",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
+      "createdAt": "2026-11-05T04:06:03.538Z",
+      "lastLoginAt": null,
+      "lastPasswordChangedAt": "2026-11-05T04:06:03.538Z"
+    }
+  ],
+  "sessions": [],
+  "twoPersonRequests": [
+    {
+      "id": "req-2p-1793851563799-c10c97",
+      "action": "PROMOTE_SUPERADMIN",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "targetUserId": "usr-officer-01",
+      "targetEmail": "officer.nurjaya@cgk-airport.co.id",
+      "reason": "Kebutuhan rotasi dinas shift malam SuperAdmin WIII",
+      "createdAt": "2026-11-05T04:06:03.799Z",
+      "expiresAt": "2026-11-06T04:06:03.798Z",
+      "status": "APPROVED",
+      "approverUserId": "usr-superadmin-02",
+      "approverEmail": "secadmin.whms@cgk-airport.co.id",
+      "approvedAt": "2026-11-05T04:06:03.799Z"
+    },
+    {
+      "id": "req-2p-1793852048501-171b5e",
+      "action": "PROMOTE_SUPERADMIN",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "targetUserId": "usr-officer-01",
+      "targetEmail": "officer.nurjaya@cgk-airport.co.id",
+      "reason": "Kebutuhan rotasi dinas shift malam SuperAdmin WIII",
+      "createdAt": "2026-11-05T04:14:08.501Z",
+      "expiresAt": "2026-11-06T04:14:08.500Z",
+      "status": "APPROVED",
+      "approverUserId": "usr-superadmin-02",
+      "approverEmail": "secadmin.whms@cgk-airport.co.id",
+      "approvedAt": "2026-11-05T04:14:08.501Z"
+    },
+    {
+      "id": "req-2p-1793852302152-515564",
+      "action": "PROMOTE_SUPERADMIN",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "targetUserId": "usr-officer-01",
+      "targetEmail": "officer.nurjaya@cgk-airport.co.id",
+      "reason": "Kebutuhan rotasi dinas shift malam SuperAdmin WIII",
+      "createdAt": "2026-11-05T04:18:22.152Z",
+      "expiresAt": "2026-11-06T04:18:22.152Z",
+      "status": "APPROVED",
+      "approverUserId": "usr-superadmin-02",
+      "approverEmail": "secadmin.whms@cgk-airport.co.id",
+      "approvedAt": "2026-11-05T04:18:22.153Z"
+    },
+    {
+      "id": "req-2p-1793862395769-d50e1a",
+      "action": "PROMOTE_SUPERADMIN",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "targetUserId": "usr-officer-01",
+      "targetEmail": "officer.nurjaya@cgk-airport.co.id",
+      "reason": "Kebutuhan rotasi dinas shift malam SuperAdmin WIII",
+      "createdAt": "2026-11-05T07:06:35.770Z",
+      "expiresAt": "2026-11-06T07:06:35.769Z",
+      "status": "APPROVED",
+      "approverUserId": "usr-superadmin-02",
+      "approverEmail": "secadmin.whms@cgk-airport.co.id",
+      "approvedAt": "2026-11-05T07:06:35.774Z"
+    },
+    {
+      "id": "req-2p-1793877488401-87ccdc",
+      "action": "PROMOTE_SUPERADMIN",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "targetUserId": "usr-officer-01",
+      "targetEmail": "officer.nurjaya@cgk-airport.co.id",
+      "reason": "Kebutuhan rotasi dinas shift malam SuperAdmin WIII",
+      "createdAt": "2026-11-05T11:18:08.401Z",
+      "expiresAt": "2026-11-06T11:18:08.400Z",
+      "status": "APPROVED",
+      "approverUserId": "usr-superadmin-02",
+      "approverEmail": "secadmin.whms@cgk-airport.co.id",
+      "approvedAt": "2026-11-05T11:18:08.402Z"
+    },
+    {
+      "id": "req-2p-1793877637527-505a8c",
+      "action": "PROMOTE_SUPERADMIN",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "targetUserId": "usr-officer-01",
+      "targetEmail": "officer.nurjaya@cgk-airport.co.id",
+      "reason": "Kebutuhan rotasi dinas shift malam SuperAdmin WIII",
+      "createdAt": "2026-11-05T11:20:37.527Z",
+      "expiresAt": "2026-11-06T11:20:37.526Z",
+      "status": "APPROVED",
+      "approverUserId": "usr-superadmin-02",
+      "approverEmail": "secadmin.whms@cgk-airport.co.id",
+      "approvedAt": "2026-11-05T11:20:37.529Z"
+    },
+    {
+      "id": "req-2p-1793878034748-17dc8a",
+      "action": "PROMOTE_SUPERADMIN",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "targetUserId": "usr-officer-01",
+      "targetEmail": "officer.nurjaya@cgk-airport.co.id",
+      "reason": "Kebutuhan rotasi dinas shift malam SuperAdmin WIII",
+      "createdAt": "2026-11-05T11:27:14.748Z",
+      "expiresAt": "2026-11-06T11:27:14.748Z",
+      "status": "APPROVED",
+      "approverUserId": "usr-superadmin-02",
+      "approverEmail": "secadmin.whms@cgk-airport.co.id",
+      "approvedAt": "2026-11-05T11:27:14.749Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit-1793851563538-ffc426",
+      "timestamp": "2026-11-05T04:06:03.538Z",
+      "actorUserId": "SYSTEM_BOOTSTRAP",
+      "actorEmail": "system@internal",
+      "actorIp": "127.0.0.1",
+      "userAgent": "WHMS-Startup-Bootstrap/1.0",
+      "action": "BOOTSTRAP_SUPERADMIN_SEED",
+      "entityType": "User",
+      "entityId": "usr-superadmin-01",
+      "airportId": "GLOBAL",
+      "beforeValues": null,
+      "afterValues": {
+        "email": "superadmin.whms@cgk-airport.co.id",
+        "role": "SuperAdmin"
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-1793851563538",
+      "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "rowHash": "33c049f87512786e87bdb34c2c9d4132fb6a15b6df0388df19ecea045a4623ca"
+    },
+    {
+      "id": "audit-1793851563805-930c04",
+      "timestamp": "2026-11-05T04:06:03.805Z",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "actorIp": "192.168.1.10",
+      "userAgent": "IntegrationTest/1.0",
+      "action": "RISK_RULES_EDITED",
+      "entityType": "RiskRule",
+      "entityId": "RULE_THERMAL_SOARING_CONDITIONS",
+      "airportId": "WIII",
+      "beforeValues": {
+        "minThermalHeightM": 750
+      },
+      "afterValues": {
+        "minThermalHeightM": 800
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-66c1925ef9a5740a",
+      "previousHash": "33c049f87512786e87bdb34c2c9d4132fb6a15b6df0388df19ecea045a4623ca",
+      "rowHash": "f22127910d9a8ed2651a9bda13de28ab0fa944c9cce68ea88023c55936dbf54e"
+    },
+    {
+      "id": "audit-1793852048504-af61fc",
+      "timestamp": "2026-11-05T04:14:08.504Z",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "actorIp": "192.168.1.10",
+      "userAgent": "IntegrationTest/1.0",
+      "action": "RISK_RULES_EDITED",
+      "entityType": "RiskRule",
+      "entityId": "RULE_THERMAL_SOARING_CONDITIONS",
+      "airportId": "WIII",
+      "beforeValues": {
+        "minThermalHeightM": 750
+      },
+      "afterValues": {
+        "minThermalHeightM": 800
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-deaada8a9007d60f",
+      "previousHash": "f22127910d9a8ed2651a9bda13de28ab0fa944c9cce68ea88023c55936dbf54e",
+      "rowHash": "f10e7fc2df2b53cc01e44a42123dfec7916a2517f7d55e26091904c8ca3d4da6"
+    },
+    {
+      "id": "audit-1793852302156-5cb523",
+      "timestamp": "2026-11-05T04:18:22.156Z",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "actorIp": "192.168.1.10",
+      "userAgent": "IntegrationTest/1.0",
+      "action": "RISK_RULES_EDITED",
+      "entityType": "RiskRule",
+      "entityId": "RULE_THERMAL_SOARING_CONDITIONS",
+      "airportId": "WIII",
+      "beforeValues": {
+        "minThermalHeightM": 750
+      },
+      "afterValues": {
+        "minThermalHeightM": 800
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-d4261123fcb73b6b",
+      "previousHash": "f10e7fc2df2b53cc01e44a42123dfec7916a2517f7d55e26091904c8ca3d4da6",
+      "rowHash": "4677e94235f42f93c350969ae2833fdafa88b939d18ae0fcec775d66561d929c"
+    },
+    {
+      "id": "audit-1793862395779-0592b2",
+      "timestamp": "2026-11-05T07:06:35.779Z",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "actorIp": "192.168.1.10",
+      "userAgent": "IntegrationTest/1.0",
+      "action": "RISK_RULES_EDITED",
+      "entityType": "RiskRule",
+      "entityId": "RULE_THERMAL_SOARING_CONDITIONS",
+      "airportId": "WIII",
+      "beforeValues": {
+        "minThermalHeightM": 750
+      },
+      "afterValues": {
+        "minThermalHeightM": 800
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-4598d9e0ac2bb9e7",
+      "previousHash": "4677e94235f42f93c350969ae2833fdafa88b939d18ae0fcec775d66561d929c",
+      "rowHash": "91388a3aaac1b7e8381cb1ca996c0ac360da380c881be773f2d3c111d71f7fb2"
+    },
+    {
+      "id": "audit-1793877488404-129aa6",
+      "timestamp": "2026-11-05T11:18:08.404Z",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "actorIp": "192.168.1.10",
+      "userAgent": "IntegrationTest/1.0",
+      "action": "RISK_RULES_EDITED",
+      "entityType": "RiskRule",
+      "entityId": "RULE_THERMAL_SOARING_CONDITIONS",
+      "airportId": "WIII",
+      "beforeValues": {
+        "minThermalHeightM": 750
+      },
+      "afterValues": {
+        "minThermalHeightM": 800
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-a1065062feb460a4",
+      "previousHash": "91388a3aaac1b7e8381cb1ca996c0ac360da380c881be773f2d3c111d71f7fb2",
+      "rowHash": "c65865283e17c40a6a2646c2afdd35d4a478108b3b9961254b9eed26ab8c5ff7"
+    },
+    {
+      "id": "audit-1793877637538-9fc819",
+      "timestamp": "2026-11-05T11:20:37.538Z",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "actorIp": "192.168.1.10",
+      "userAgent": "IntegrationTest/1.0",
+      "action": "RISK_RULES_EDITED",
+      "entityType": "RiskRule",
+      "entityId": "RULE_THERMAL_SOARING_CONDITIONS",
+      "airportId": "WIII",
+      "beforeValues": {
+        "minThermalHeightM": 750
+      },
+      "afterValues": {
+        "minThermalHeightM": 800
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-c1a2b58afb110132",
+      "previousHash": "c65865283e17c40a6a2646c2afdd35d4a478108b3b9961254b9eed26ab8c5ff7",
+      "rowHash": "17559c74fac515640117b30151c6aad359372ad75e083a9d3b5d3508c6dbf180"
+    },
+    {
+      "id": "audit-1793878034752-6b99b3",
+      "timestamp": "2026-11-05T11:27:14.752Z",
+      "actorUserId": "usr-superadmin-01",
+      "actorEmail": "superadmin.whms@cgk-airport.co.id",
+      "actorIp": "192.168.1.10",
+      "userAgent": "IntegrationTest/1.0",
+      "action": "RISK_RULES_EDITED",
+      "entityType": "RiskRule",
+      "entityId": "RULE_THERMAL_SOARING_CONDITIONS",
+      "airportId": "WIII",
+      "beforeValues": {
+        "minThermalHeightM": 750
+      },
+      "afterValues": {
+        "minThermalHeightM": 800
+      },
+      "result": "SUCCESS",
+      "correlationId": "corr-25fc7861fe682d3a",
+      "previousHash": "17559c74fac515640117b30151c6aad359372ad75e083a9d3b5d3508c6dbf180",
+      "rowHash": "42befe5bfeee3ce5dad8967f27fd5f16c8cf879bb2ee8dd94aa58551ffad83bc"
+    }
+  ]
+}
